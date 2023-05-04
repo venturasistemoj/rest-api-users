@@ -13,6 +13,7 @@ import org.springframework.data.annotation.Transient;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -25,6 +26,7 @@ import lombok.ToString;
 
 @Entity
 @Table(name = "addresses")
+@NoArgsConstructor
 @Setter
 @Getter
 @ToString

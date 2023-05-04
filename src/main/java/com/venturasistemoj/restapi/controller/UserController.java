@@ -31,14 +31,13 @@ import io.swagger.annotations.ApiOperation;
 
 /*
  * @CrossOrigin(origins = "*")
- * Anotação para permitir requisições de origem cruzada em classes de manipulador específicas e/ou métodos de manipulador.
- * Processada se um HandlerMapping apropriado estiver configurado. O Spring Web MVC e o Spring WebFlux suportam essa
- * anotação por meio do RequestMappingHandlerMapping em seus respectivos módulos. Os valores de cada tipo e par de
- * anotações de nível de método são adicionados a uma CorsConfiguration e, em seguida, os valores padrão são aplicados
- * por meio de CorsConfiguration.applyPermitDefaultValues().
- * As regras para combinar configuração global e local são geralmente aditivas - p. ex., todas as origens globais e locais.
- * Para aqueles atributos em que apenas um único valor pode ser aceito, como allowCredentials e maxAge, o local substitui
- * o valor global. Consulte CorsConfiguration.combine(CorsConfiguration) para obter mais detalhes. */
+ *
+ * [EN] Annotation for permitting cross-origin requests on specific handler classesand/or handler methods.
+ * Processed if an appropriate HandlerMappingis configured.
+ *
+ * [PT] Anotação para permitir requisições de origem cruzada em classes de manipulador específicas e/ou métodos
+ * de manipulador. Processada se um HandlerMapping apropriado estiver configurado.
+ */
 
 @RestController
 @RequestMapping("/rest-api/users")
