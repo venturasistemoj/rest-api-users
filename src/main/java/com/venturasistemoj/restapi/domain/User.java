@@ -119,7 +119,7 @@ public class User {
 	@JsonManagedReference
 	private Address address;
 
-	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	@JsonManagedReference
 	private Set<PhoneNumber> phones;
 
