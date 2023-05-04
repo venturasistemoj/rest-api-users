@@ -20,42 +20,72 @@ import org.springframework.data.annotation.Transient;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
 /**
  * Entity class for an User.
  *
- * @author Ventura
+ * @author Wilson Ventura
  * @since 2023
  */
 
-
-
 /*
- * Relações bidirecionais no Jackson e "Jackson JSON recursão infinita".
- * https://www.baeldung.com/jackson-bidirectional-relationships-and-infinite-recursion
+ * [EN] Bidirectional relationships in Jackson
+ * Jackson JSON infinite recursion problem
+ * For two entities with a simple one-to-many relationship, when we try to serialize an instance of one entity Jackson
+ * throws a JsonMappingException exception. So we annotate the relationships with @JsonManagedReference, and
+ * @JsonBackReference to allow Jackson to better handle the relation.
+ *
+ * @JsonManagedReference is the forward part of reference, the one that gets serialized normally.
+ * @JsonBackReference is the back part of reference; it'll be omitted from serialization.
+ * Also note that we can't switch around the annotations.
+ *
+ * [PT] Relacionamentos bidirecionais no Jackson
+ * O Problema de recursão infinita JSON Jackson
+ * Para duas entidades com um relacionamento simples um-para-muitos, quando tentamos serializar uma instância de uma
+ * entidade, o Jackson lança uma exceção JsonMappingException. Dessa forma, devemos anotar os relacionamentos com
+ * @JsonManagedReference e @JsonBackReference para permitir que Jackson lide melhor com a relação.
  *
  * @JsonManagedReference é a parte dianteira da referência, aquela que é serializada normalmente.
- * @JsonBackReference é a parte de trás da referência; ela será omitida da serialização.
- * Os objetos Set<Phonenunber> e Address serializados não contém uma referência ao objeto User.
- * Observe também que não podemos alternar as anotações, @JsonBackReference não pode ser usado em uma coleção.
+ * @JsonBackReference é a parte traseira da referência;  será omitida da serialização.
+ * Observe também que não podemos alternar entre as anotações.
  */
 
 /*
- * Hibernate Error: Object References an Unsaved Transient Instance
- * https://www.baeldung.com/hibernate-unsaved-transient-instance-error
+ * [EN] Hibernate Error: Object References an Unsaved Transient Instance
+ * This error occurs from the Hibernate session when we try to persist a managed entity, and that entity references
+ * an unsaved transient instance. A solution to cascade save/update/delete operations for entity relationships that
+ * depend on the existence of another entity is using a proper CascadeType in the entity associations.
  *
- * this
- * @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+ * [PT] Erro Hibernate: o objeto faz referência a uma instância transiente não salva
+ * Esse erro ocorre na sessão do Hibernate quando tentamos persistir uma entidade gerenciada que faz referência a
+ * uma instância transiente não salva. Uma solução para salvar/atualizar/excluir operações em cascata para
+ * relacionamentos de entidade que dependem da existência de outra entidade é usar um CascadeType adequado nas
+ * associações de entidade.
  *
- * class PhoneNumber
+ * @OneToOne
+ *
+ * In this class / Nesta classe
+ * @OneToOne(cascade = CascadeType.ALL)
+ *
+ * In the Address class / Na classe Address
+ * @OneToOne(mappedBy = "address")
+ *
+ * @OneToMany and @ManyToOne
+ *
+ * In this class / Nesta classe
+ * @OneToMany(cascade = CascadeType.ALL)
+ *
+ * In the PhoneNumber class / Na classe PhoneNumber
  * @Cascade(CascadeType.SAVE_UPDATE)
- * User user
+ *
  */
 
 @Entity
 @Table(name = "users")
+@NoArgsConstructor
 @Setter
 @Getter
 @ToString
