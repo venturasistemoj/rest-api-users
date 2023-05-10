@@ -51,6 +51,12 @@ import lombok.ToString;
  * @JsonManagedReference é a parte dianteira da referência, aquela que é serializada normalmente.
  * @JsonBackReference é a parte traseira da referência;  será omitida da serialização.
  * Observe também que não podemos alternar entre as anotações.
+ *
+ * @JsonManagedReference
+ * private Address address;
+ *
+ * @JsonBackReference
+ * private User user;
  */
 
 /*
@@ -65,21 +71,21 @@ import lombok.ToString;
  * relacionamentos de entidade que dependem da existência de outra entidade é usar um CascadeType adequado nas
  * associações de entidade.
  *
- * @OneToOne
+ * # @OneToOne
  *
- * In this class / Nesta classe
  * @OneToOne(cascade = CascadeType.ALL)
+ * private Address address;
  *
- * In the Address class / Na classe Address
  * @OneToOne(mappedBy = "address")
+ * private User user;
  *
- * @OneToMany and @ManyToOne
+ * # @OneToMany and @ManyToOne
  *
- * In this class / Nesta classe
  * @OneToMany(cascade = CascadeType.ALL)
+ * private Set<PhoneNumber> phones;
  *
- * In the PhoneNumber class / Na classe PhoneNumber
  * @Cascade(CascadeType.SAVE_UPDATE)
+ * private User user;
  *
  */
 
