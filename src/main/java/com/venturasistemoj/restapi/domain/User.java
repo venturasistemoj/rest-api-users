@@ -1,6 +1,7 @@
 package com.venturasistemoj.restapi.domain;
 
 import java.time.LocalDate;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -17,12 +18,14 @@ import javax.validation.constraints.Pattern;
 
 import org.springframework.data.annotation.Transient;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
 /**
  * Entity class for an User.
@@ -32,85 +35,92 @@ import lombok.ToString;
  */
 
 /*
- * [EN] Bidirectional relationships in Jackson
- * Jackson JSON infinite recursion problem
- * For two entities with a simple one-to-many relationship, when we try to serialize an instance of one entity Jackson
- * throws a JsonMappingException exception. So we annotate the relationships with @JsonManagedReference, and
- * @JsonBackReference to allow Jackson to better handle the relation.
+ * [EN] When serializing related Java objects to JSON format, a circular reference problem may occur, resulting in
+ * an infinite loop. To deal with this problem, Spring uses the @JsonManagedReference and @JsonBackReference annotations,
+ * provided by the Jackson library, which is widely used in the context of Spring for serializing and deserializing Java
+ * objects to JSON.
+ * These annotations are used to resolve circular reference issues when serializing related objects into
+ * bidirectional relationships.
+ * In a two-way relationship, where one entity is the "parent" and the other is the "child", the @JsonManagedReference
+ * annotation is placed on the "parent" entity to indicate that the relationship is managed from that entity. It marks
+ * the property representing the relationship to the "child" entity. Jackson serializes the "parent" entity normally,
+ * but when it encounters the property marked with @JsonManagedReference, it avoids serializing the "child" entity to
+ * avoid the infinite loop.
+ * The @JsonBackReference annotation is placed on the "child" entity and marks the property that represents the
+ * relationship with the "parent" entity. This annotation is to prevent recursive serialization of the bidirectional
+ * relationship. When serializing a "parent" object to JSON, the "child" property will be included normally in the JSON
+ * result, but "child" object serialization will be avoided to avoid infinite loop.
  *
- * @JsonManagedReference is the forward part of reference, the one that gets serialized normally.
- * @JsonBackReference is the back part of reference; it'll be omitted from serialization.
- * Also note that we can't switch around the annotations.
+ * [PT] Durante a serialização de objetos Java relacionados para formato JSON, pode ocorrer um problema de referência
+ * circular, resultando em um loop infinito. Para lidar com esse problema, o Spring utiliza as anotações
+ * @JsonManagedReference e @JsonBackReference, fornecidas pela biblioteca Jackson, amplamente utilizada no contexto do
+ * Spring para serialização e desserialização de objetos Java para JSON.
+ * Essas anotações são usadas para resolver problemas de referência circular durante a serialização de objetos
+ * relacionados em relacionamentos bidirecionais.
+ * Em um relacionamento bidirecional, onde uma entidade é o "pai" e a outra é a "filha", a anotação
+ * @JsonManagedReference é colocada na entidade "pai" para indicar que o relacionamento é gerenciado a partir dessa
+ * entidade. Ela marca a propriedade que representa a relação com a entidade "filha". O Jackson serializa a entidade
+ * "pai" normalmente, mas quando encontra a propriedade marcada com @JsonManagedReference, evita serializar a entidade
+ * "filha" para evitar o loop infinito.
+ * A anotação @JsonBackReference é colocada na entidade "filha" e marca a propriedade que representa a relação com a
+ * entidade "pai". Essa anotação serve para evitar a serialização recursiva do relacionamento bidirecional. Ao
+ * serializar um objeto "pai" para JSON, a propriedade "filha" será incluída normalmente no resultado JSON, mas a
+ * serialização do objeto "filha" será evitada para evitar o loop infinito.
  *
- * [PT] Relacionamentos bidirecionais no Jackson
- * O Problema de recursão infinita JSON Jackson
- * Para duas entidades com um relacionamento simples um-para-muitos, quando tentamos serializar uma instância de uma
- * entidade, o Jackson lança uma exceção JsonMappingException. Dessa forma, devemos anotar os relacionamentos com
- * @JsonManagedReference e @JsonBackReference para permitir que Jackson lide melhor com a relação.
- *
- * @JsonManagedReference é a parte dianteira da referência, aquela que é serializada normalmente.
- * @JsonBackReference é a parte traseira da referência;  será omitida da serialização.
- * Observe também que não podemos alternar entre as anotações.
- *
+ * this
  * @JsonManagedReference
- * private Address address;
- *
- * @JsonBackReference
- * private User user;
- */
-
-/*
- * [EN] Hibernate Error: Object References an Unsaved Transient Instance
- * This error occurs from the Hibernate session when we try to persist a managed entity, and that entity references
- * an unsaved transient instance. A solution to cascade save/update/delete operations for entity relationships that
- * depend on the existence of another entity is using a proper CascadeType in the entity associations.
- *
- * [PT] Erro Hibernate: o objeto faz referência a uma instância transiente não salva
- * Esse erro ocorre na sessão do Hibernate quando tentamos persistir uma entidade gerenciada que faz referência a
- * uma instância transiente não salva. Uma solução para salvar/atualizar/excluir operações em cascata para
- * relacionamentos de entidade que dependem da existência de outra entidade é usar um CascadeType adequado nas
- * associações de entidade.
- *
- * # @OneToOne
- *
- * @OneToOne(cascade = CascadeType.ALL)
- * private Address address;
- *
- * @OneToOne(mappedBy = "address")
- * private User user;
- *
- * # @OneToMany and @ManyToOne
- *
- * @OneToMany(cascade = CascadeType.ALL)
  * private Set<PhoneNumber> phones;
  *
- * @Cascade(CascadeType.SAVE_UPDATE)
+ * PhoneNumber class
+ * @JsonBackReference
  * private User user;
+ *
+ */
+
+/* [EN] Spring uses Jackson’s ObjectMapper in request and response body object serialization, so by annotating date
+ * and time field with @JsonFormat, ObjectMapper will serialize and deserialize the field value according to the
+ * provided format pattern.
+ * Note that the following Lombok annotations need to be present
+ * @NoArgsConstructor e @AllArgsConstructor
+ *
+ * [PT] O Spring usa o Jackson ObjectMapper na serialização do objeto do corpo da requisição e da resposta; portanto,
+ * ao anotar o campo com @JsonFormat, ele serializará e desserializará o valor de acordo com o padrão fornecido.
+ * Note que as seguintes anotações do Lombok precisam estar presentes
+ * @NoArgsConstructor e @AllArgsConstructor
+ *
+ * @NotNull
+ * @JsonFormat(pattern = "dd/MM/yyyy")
+ * private LocalDate birthDate;
  *
  */
 
 @Entity
 @Table(name = "users")
-@NoArgsConstructor
 @Setter
 @Getter
-@ToString
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class User {
 
 	@Transient
 	private static final String cpfRegEx = "^[\\d]{3}\\.?[\\d]{3}\\.?[\\d]{3}\\-?[\\d]{2}$";
 
 	@Transient
-	private static final String emailRegEx = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+	private static final String emailRegEx =
+	"^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
 	// https://www.w3schools.blog/validate-email-regular-expression-regex-java
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Long userId;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
 	@NotNull private String name;
 	@NotNull private String surName;
-	@NotNull private LocalDate birthDate;
+
+	@NotNull
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	private LocalDate birthDate;
 
 	@NotNull
 	@Pattern(regexp = cpfRegEx, message = "CPF inválido!")
@@ -120,26 +130,38 @@ public class User {
 	@Pattern(regexp = emailRegEx, message = "E-mail inválido!")
 	private String email;
 
+	// 'cascade' define o comportamento de propagação das operações de persistência da entidade "pai" para a entidade "filha".
 	@OneToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "addressId", nullable = false)
-	@JsonManagedReference
+	@JoinColumn(name = "address_id", nullable = false) //foreign key
 	private Address address;
 
+	// 'mappedBy' especifica o nome da propriedade na entidade relacionada que é dona da relação.
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	@JsonManagedReference
 	private Set<PhoneNumber> phones;
 
-	// https://projectlombok.org/features/Data
-	@lombok.experimental.Tolerate
-	public User(@NotNull String name, @NotNull String surName, @NotNull LocalDate birthDate,
-			@NotNull @Pattern(regexp = cpfRegEx, message = "CPF inválido!") String cpf,
-			@NotNull @Pattern(regexp = emailRegEx, message = "E-mail inválido!") String email) {
-		super();
-		this.name = name;
-		this.surName = surName;
-		this.birthDate = birthDate;
-		this.cpf = cpf;
-		this.email = email;
+	@Override
+	public int hashCode() {
+		return Objects.hash(birthDate, cpf, id);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if ((obj == null) || (getClass() != obj.getClass()))
+			return false;
+		User other = (User) obj;
+		return Objects.equals(birthDate, other.birthDate) && Objects.equals(cpf, other.cpf)
+				&& Objects.equals(id, other.id);
+	}
+
+	@Override
+	public String toString() {
+		return String.format(
+				"%nUser - id: %d, name: %s, surname: %s, birthDate %s, cpf: %s, e-mail: %s%n%sPhones - %s%n",
+				getId(), getName(), getSurName(), getBirthDate(), getCpf(), getEmail(), getAddress(), getPhones()
+				);
 	}
 
 }

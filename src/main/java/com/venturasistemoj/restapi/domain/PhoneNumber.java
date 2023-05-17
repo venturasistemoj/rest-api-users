@@ -1,5 +1,8 @@
 package com.venturasistemoj.restapi.domain;
 
+import java.util.Objects;
+
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -9,8 +12,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.Pattern;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 import org.springframework.data.annotation.Transient;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -18,7 +19,6 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
 /**
  * Entity class for a Phone Number
@@ -32,15 +32,15 @@ import lombok.ToString;
 @NoArgsConstructor
 @Setter
 @Getter
-@ToString
 public class PhoneNumber {
 
 	@Transient
 	private static final String phoneRegEx = "^\\(?[1-9]{2}\\)? ?(?:[2-8]|9[1-9])[0-9]{3}\\-?[0-9]{4}$";
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Long phoneId;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "phone_id")
+	private Long id;
 
 	private String type;
 
@@ -48,8 +48,7 @@ public class PhoneNumber {
 	private String number;
 
 	@ManyToOne
-	@Cascade(CascadeType.SAVE_UPDATE)
-	@JoinColumn(name = "userId", nullable = false)
+	@JoinColumn(name = "user_id", nullable = false) // foreign key
 	@JsonBackReference
 	private User user;
 
@@ -59,6 +58,26 @@ public class PhoneNumber {
 		super();
 		this.type = type;
 		this.number = number;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id, number, type);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if ((obj == null) || (getClass() != obj.getClass()))
+			return false;
+		PhoneNumber other = (PhoneNumber) obj;
+		return Objects.equals(id, other.id) && Objects.equals(number, other.number) && Objects.equals(type, other.type);
+	}
+
+	@Override
+	public String toString() {
+		return String.format("PhoneNumber: id: %d, type: %s, number: %s ", getId(), getType(), getNumber());
 	}
 
 }

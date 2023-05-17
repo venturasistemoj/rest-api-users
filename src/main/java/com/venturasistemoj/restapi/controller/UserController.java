@@ -6,7 +6,6 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,11 +15,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.venturasistemoj.restapi.domain.PhoneNumber;
 import com.venturasistemoj.restapi.domain.User;
 import com.venturasistemoj.restapi.domain.UserRepository;
-
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 
 /**
  * API controller class.
@@ -29,20 +26,8 @@ import io.swagger.annotations.ApiOperation;
  * @since 2023
  */
 
-/*
- * @CrossOrigin(origins = "*")
- *
- * [EN] Annotation for permitting cross-origin requests on specific handler classesand/or handler methods.
- * Processed if an appropriate HandlerMappingis configured.
- *
- * [PT] Anotação para permitir requisições de origem cruzada em classes de manipulador específicas e/ou métodos
- * de manipulador. Processada se um HandlerMapping apropriado estiver configurado.
- */
-
 @RestController
 @RequestMapping("/rest-api/users")
-@Api(value = "Users Rest API")
-@CrossOrigin(origins = "*")
 public class UserController {
 
 	private Optional<User> optionalUser;
@@ -51,7 +36,6 @@ public class UserController {
 	private UserRepository userRepository;
 
 	@PostMapping
-	@ApiOperation(value = "Create a new user.")
 	public ResponseEntity<User> createUser(@RequestBody User user) {
 
 		final User savedUser = userRepository.save(user);
@@ -59,27 +43,37 @@ public class UserController {
 	}
 
 	@PutMapping("/{id}")
-	@ApiOperation(value = "Update an existing user.")
 	public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User user) {
 
-		optionalUser = userRepository.findById(id);
+		Optional<User> optionalUser = userRepository.findById(id);
 
-		if (optionalUser.isPresent() == false)
+		if (optionalUser.isPresent()) {
+			User existingUser = optionalUser.get();
+
+			// Verifica se o id fornecido na requisição corresponde ao id do usuário existente
+			if ( ! existingUser.getId().equals(user.getId()))
+				return ResponseEntity.badRequest().build(); // 400 - Id inválido
+
+			// Atualiza o endereço
+			if (user.getAddress() != null)
+				existingUser.setAddress(user.getAddress());
+
+			// Atualiza os números de telefone
+			if (user.getPhones() != null) {
+				existingUser.getPhones().clear();
+				existingUser.getPhones().addAll(user.getPhones());
+				for (PhoneNumber phoneNumber : existingUser.getPhones())
+					phoneNumber.setUser(existingUser);
+			}
+
+			User updatedUser = userRepository.save(existingUser);
+			return ResponseEntity.ok(updatedUser); // 200 - Usuário atualizado
+
+		} else
 			return ResponseEntity.notFound().build(); // 404
-
-		final User updatedUser = optionalUser.get();
-		updatedUser.setName(user.getName());
-		updatedUser.setBirthDate(user.getBirthDate());
-		updatedUser.setCpf(user.getCpf());
-		updatedUser.setEmail(user.getEmail());
-		updatedUser.setAddress(user.getAddress());
-		updatedUser.setPhones(user.getPhones());
-
-		return ResponseEntity.ok(userRepository.save(updatedUser)); // 200
 	}
 
 	@GetMapping("/{id}")
-	@ApiOperation(value = "Retrieve an existing user.")
 	public ResponseEntity<User> getUserById(@PathVariable Long id) {
 
 		optionalUser = userRepository.findById(id);
@@ -91,7 +85,6 @@ public class UserController {
 	}
 
 	@GetMapping
-	@ApiOperation(value = "Get a list of existing users.")
 	public ResponseEntity<List<User>> getUsers() {
 
 		final List<User> userlist = userRepository.findAll();
@@ -103,7 +96,6 @@ public class UserController {
 	}
 
 	@DeleteMapping("/{id}")
-	@ApiOperation(value = "Delete an existing user.")
 	public ResponseEntity<User> deleteUser(@PathVariable Long id) {
 
 		optionalUser = userRepository.findById(id);
