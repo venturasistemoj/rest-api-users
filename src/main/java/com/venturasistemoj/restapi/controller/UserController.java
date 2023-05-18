@@ -54,6 +54,13 @@ public class UserController {
 			if ( ! existingUser.getId().equals(user.getId()))
 				return ResponseEntity.badRequest().build(); // 400 - Id inválido
 
+			// Atualiza os dados do usuário
+			existingUser.setName(user.getName());
+			existingUser.setSurName(user.getSurName());
+			existingUser.setBirthDate(user.getBirthDate());
+			existingUser.setCpf(user.getCpf());
+			existingUser.setEmail(user.getEmail());
+
 			// Atualiza o endereço
 			if (user.getAddress() != null)
 				existingUser.setAddress(user.getAddress());
