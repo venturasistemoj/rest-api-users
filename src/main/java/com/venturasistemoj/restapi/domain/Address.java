@@ -24,9 +24,9 @@ import lombok.Setter;
 
 @Entity
 @Table(name = "addresses")
-@NoArgsConstructor
 @Setter
 @Getter
+@NoArgsConstructor
 public class Address {
 
 	@Transient

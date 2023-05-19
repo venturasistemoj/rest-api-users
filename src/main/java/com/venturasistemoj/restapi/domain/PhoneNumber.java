@@ -29,9 +29,9 @@ import lombok.Setter;
 
 @Entity
 @Table(name = "phones")
-@NoArgsConstructor
 @Setter
 @Getter
+@NoArgsConstructor
 public class PhoneNumber {
 
 	@Transient
@@ -48,7 +48,7 @@ public class PhoneNumber {
 	private String number;
 
 	@ManyToOne
-	@JoinColumn(name = "user_id", nullable = false) // foreign key
+	@JoinColumn(name = "user_id", referencedColumnName = "id") // foreign key
 	@JsonBackReference
 	private User user;
 
