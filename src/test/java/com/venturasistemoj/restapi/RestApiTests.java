@@ -28,7 +28,7 @@ import com.venturasistemoj.restapi.domain.User;
 import com.venturasistemoj.restapi.domain.UserRepository;
 
 /**
- * [EN] Test class for UserController class with JUnit and Mockito.
+ * [EN] Test class for UserController class with JUnit and Mockito (Without loading application context).
  * This claas uses the Mockito library to create UserRepository mocks and inject them into the UserController using
  * the @InjectMocks annotation. It also uses the @BeforeEach annotation to initialize the mocks before each test using
  * MockitoAnnotations.openMocks(this).
@@ -37,7 +37,7 @@ import com.venturasistemoj.restapi.domain.UserRepository;
  * checks the results. The when method activates fragmentation methods and is used for the simulation to return a value
  * specific when a specific method is called.
  *
- * [PT] Classe de teste com JUnit e Mockito.
+ * [PT] Classe de teste com JUnit e Mockito (Sem carregar o contexto da aplicação).
  * Esta classe utiliza a biblioteca Mockito para criar mocks de UserRepository e os injeta no UserController com a
  * anotação @InjectMocks. Também utiliza a anotação @BeforeEach para inicializar os mocks antes de cada teste usando
  * MockitoAnnotations.openMocks(this).

@@ -18,7 +18,6 @@ import javax.validation.constraints.Pattern;
 
 import org.springframework.data.annotation.Transient;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import lombok.AllArgsConstructor;
@@ -77,22 +76,22 @@ import lombok.Setter;
  *
  */
 
-/* [EN] Spring uses Jackson’s ObjectMapper in request and response body object serialization, so by annotating date
- * and time field with @JsonFormat, ObjectMapper will serialize and deserialize the field value according to the
- * provided format pattern.
- * Note that the following Lombok annotations need to be present
+/* [EN] The JacksonConfig class configures custom serializers and deserializers at application-level for the types
+ * LocalDate, LocalTime and LocalDateTime eliminating the need for @JsonFormat annotation on each entity field of
+ * the application that needs it.
+ *
+ * >> Note that the following Lombok annotations need to be present
  * @NoArgsConstructor e @AllArgsConstructor
  *
- * [PT] O Spring usa o Jackson ObjectMapper na serialização do objeto do corpo da requisição e da resposta; portanto,
- * ao anotar o campo com @JsonFormat, ele serializará e desserializará o valor de acordo com o padrão fornecido.
- * Note que as seguintes anotações do Lombok precisam estar presentes
- * @NoArgsConstructor e @AllArgsConstructor
+ * [PT] A classe JacksonConfig configura serializadores e desserializadores personalizados para os tipos
+ * LocalDate, LocalTime e LocalDateTime em nível de aplicação eliminando a necessidade da anotação @JsonFormat em cada
+ * campo de entidade da aplicação que precisar dela.
  *
- * @NotNull
- * @JsonFormat(pattern = "dd/MM/yyyy")
- * private LocalDate birthDate;
+ * >> Note que as seguintes anotações do Lombok precisam estar presentes
+ * @NoArgsConstructor e @AllArgsConstructor
  *
  */
+
 
 @Entity
 @Table(name = "users")
@@ -119,7 +118,7 @@ public class User {
 	@NotNull private String surName;
 
 	@NotNull
-	@JsonFormat(pattern = "dd/MM/yyyy")
+	//@JsonFormat(pattern = "dd/MM/yyyy")
 	private LocalDate birthDate;
 
 	@NotNull
@@ -132,7 +131,7 @@ public class User {
 
 	// 'cascade' define o comportamento de propagação das operações de persistência da entidade "pai" para a entidade "filha".
 	@OneToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "address_id", nullable = false) //foreign key
+	@JoinColumn(name = "address_id", referencedColumnName = "id") //foreign key
 	private Address address;
 
 	// 'mappedBy' especifica o nome da propriedade na entidade relacionada que é dona da relação.
