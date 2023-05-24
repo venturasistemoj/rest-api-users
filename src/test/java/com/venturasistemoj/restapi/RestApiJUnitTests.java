@@ -49,7 +49,7 @@ import com.venturasistemoj.restapi.domain.UserRepository;
  * @since 2023
  */
 
-class RestApiTests {
+class RestApiJUnitTests {
 
 	@Mock
 	private UserRepository userRepository;
