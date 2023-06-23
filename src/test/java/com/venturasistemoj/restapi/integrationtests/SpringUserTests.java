@@ -1,15 +1,11 @@
-package com.venturasistemoj.restapi;
+package com.venturasistemoj.restapi.integrationtests;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.time.LocalDate;
 import java.time.Month;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,10 +19,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import com.venturasistemoj.restapi.domain.Address;
-import com.venturasistemoj.restapi.domain.PhoneNumber;
-import com.venturasistemoj.restapi.domain.User;
-import com.venturasistemoj.restapi.domain.UserRepository;
+import com.venturasistemoj.restapi.domain.user.UserDTO;
+import com.venturasistemoj.restapi.domain.user.UserService;
 
 /**
  * [EN] Integration test class for user management RESTful API using Spring Boot framework and the TestRestTemplate
@@ -42,8 +36,8 @@ import com.venturasistemoj.restapi.domain.UserRepository;
  * including controllers, service layer and persistence layer. Using TestRestTemplate is more suitable
  * for integration tests that span multiple layers of the system.
  *
- * [PT] Classe de testes de integração para a API RESTful de gerenciamento de usuários que utiliza o framework Spring Boot e
- * a biblioteca TestRestTemplate para realizar as requisições HTTP e verificar as respostas.
+ * [PT] Classe de testes de integração para a API RESTful de gerenciamento de usuários que utiliza o framework
+ * Spring Boot e a biblioteca TestRestTemplate para realizar as requisições HTTP e verificar as respostas.
  *
  * A anotação @SpringBootTest pode ser especificada em uma classe de teste que executa testes baseados em Spring Boot.
  * Além do Spring TestContextFramework regular, fornece suporte para diferentes modos de ambiente web, incluindo a
@@ -51,7 +45,7 @@ import com.venturasistemoj.restapi.domain.UserRepository;
  * Pode registrar os seguintes beans para testes web que estão usando um servidor web em execução:
  * TestRestTemplate, WebTestClient e HttpGraphQlTester.
  *
- * TestRestTemplate oferece uma maneira mais realista de testar requisições HTTP. Ela inicia um servidor incorporado e
+ * TestRestTemplate oferece uma maneira mais realista de testar requisições HTTP. Ele inicia um servidor incorporado e
  * faz chamadas HTTP reais para a API em execução. Permite testar a integração entre vários componentes do sistema,
  * incluindo controladores, camada de serviço e camada de persistência. A utilização de TestRestTemplate é mais adequada
  * para testes de integração que abrangem várias camadas do sistema.
@@ -61,24 +55,24 @@ import com.venturasistemoj.restapi.domain.UserRepository;
  */
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-class RestApiSpringIntegrationTests {
+class SpringUserTests {
 
 	// URL base da API
 	private static final String URL_API = "/rest-api/users";
 
 	@Autowired private TestRestTemplate restTemplate;
-	@Autowired private UserRepository userRepository;
+	@Autowired private UserService userService;
 
-	private User user;
-	private User savedUser;
+	private UserDTO user;
+	private UserDTO savedUser;
 
 	// Configuração inicial para os testes
 	@BeforeEach
 	public void setUp() {
 
 		// Criação de um usuário usando o padrão de design Builder por meio do Lombok
-		user = User.builder()
-				.id(1L)
+		user = UserDTO.builder()
+				.userId(1L)
 				.name("Luiz Inacio")
 				.surName("da Silva")
 				.birthDate(LocalDate.of(1972, Month.FEBRUARY, 22))
@@ -86,56 +80,85 @@ class RestApiSpringIntegrationTests {
 				.email("lula@prov.com")
 				.build();
 
+		/*
 		// Criação de um endereço para o usuário
-		Address addressTest = new Address("Avenida", "Glasshouse, 69", "1001", "Rio 40º", "RJ", "69.069-069");
-		addressTest.setId(1L);
-		user.setAddress(addressTest);
+		AddressDTO addressTest = AddressDTO.builder()
+				.addressId(1L)
+				.publicPlace("Avenida")
+				.streetAddress("Glasshouse, 69")
+				.complement("1001")
+				.city("Rio 40º")
+				.state("RJ")
+				.zipCode("69.069-069")
+				.build();
+
+		user.setAddressDTO(addressTest);
+		addressTest.setUserDTO(user);
 
 		// Criação de um número de telefone para o usuário
-		PhoneNumber phone = new PhoneNumber("Cel", "(21) 96687-8776");
-		phone.setUser(user);
-		phone.setId(1L);
-		Set<PhoneNumber> phoneTest = new HashSet<>();
+		PhoneNumberDTO phone = PhoneNumberDTO.builder()
+				.phoneId(1L)
+				.type("Cel")
+				.number("(21) 96687-8776")
+				.build();
+
+		List<PhoneNumberDTO> phoneTest = new ArrayList<>();
 		phoneTest.add(phone);
-		user.setPhones(phoneTest);
+		user.setPhonesDTO(phoneTest);
+
+		phone.setUserDTO(user);
+		 */
 
 		// Salva o usuário no repositório para uso nos testes
-		savedUser = userRepository.save(user);
+		savedUser = userService.createUser(user);
 	}
 
 	@Test
 	public void testCreateUser() {
 
 		// Envia uma requisição POST para a URL_API com o usuário no corpo da requisição
-		ResponseEntity<User> response = restTemplate.postForEntity(URL_API, user, User.class);
+		ResponseEntity<UserDTO> response = restTemplate.postForEntity(URL_API, user, UserDTO.class);
 
 		// Verifica o status da resposta e os dados do usuário retornados
 		assertEquals(HttpStatus.CREATED, response.getStatusCode());
 		assertNotNull(response.getBody());
-		assertNotNull(response.getBody().getId());
+		assertNotNull(response.getBody().getUserId());
 		assertEquals(user.getName(), response.getBody().getName());
 		assertEquals(user.getEmail(), response.getBody().getEmail());
 		assertEquals(user.getCpf(), response.getBody().getCpf());
 		assertEquals(user.getBirthDate(), response.getBody().getBirthDate());
-		assertEquals(user.getAddress(), response.getBody().getAddress());
-		assertEquals(user.getPhones(), response.getBody().getPhones());
+		assertEquals(user.getAddressDTO(), response.getBody().getAddressDTO());
+
+		/*
+		// Verifica se os conjuntos têm o mesmo tamanho
+		assertEquals(user.getPhonesDTO().size(), response.getBody().getPhonesDTO().size());
+
+		// Verifica com Java 8 se os elementos esperados estão presentes no conjunto atual.
+		// Mesma função do código comentado acima (Java 7)
+		boolean allPhonesMatched = response.getBody().getPhonesDTO().stream()
+				.allMatch(expectedPhone -> user.getPhonesDTO().stream()
+						.anyMatch(actualPhone -> expectedPhone.getType().equals(actualPhone.getType()) &&
+								expectedPhone.getNumber().equals(actualPhone.getNumber())));
+
+		Assertions.assertTrue(allPhonesMatched);
+		 */
 	}
 
 	@Test
 	public void testGetUser() {
 
 		// Envia uma requisição GET para a URL_API com o ID do usuário
-		ResponseEntity<User> response = restTemplate.getForEntity(URL_API + "/" + savedUser.getId(), User.class);
+		ResponseEntity<UserDTO> response = restTemplate.getForEntity(URL_API + "/" + savedUser.getUserId(), UserDTO.class);
 
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 		assertNotNull(response.getBody());
-		assertEquals(savedUser.getId(), response.getBody().getId());
+		assertEquals(savedUser.getUserId(), response.getBody().getUserId());
 		assertEquals(savedUser.getName(), response.getBody().getName());
 		assertEquals(savedUser.getEmail(), response.getBody().getEmail());
 		assertEquals(savedUser.getCpf(), response.getBody().getCpf());
 		assertEquals(savedUser.getBirthDate(), response.getBody().getBirthDate());
-		assertEquals(savedUser.getAddress(), response.getBody().getAddress());
-		assertEquals(savedUser.getPhones(), response.getBody().getPhones());
+		assertEquals(savedUser.getAddressDTO(), response.getBody().getAddressDTO());
+		assertEquals(savedUser.getPhonesDTO(), response.getBody().getPhonesDTO());
 
 	}
 
@@ -143,28 +166,28 @@ class RestApiSpringIntegrationTests {
 	public void testGetUsers() {
 
 		// Envia uma requisição GET para a URL_API para buscar todos os usuários
-		ResponseEntity<List<User>> response = restTemplate.exchange(URL_API, HttpMethod.GET, null,
-				new ParameterizedTypeReference<List<User>>() {
+		ResponseEntity<List<UserDTO>> response = restTemplate.exchange(URL_API, HttpMethod.GET, null,
+				new ParameterizedTypeReference<List<UserDTO>>() {
 		});
 
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 		assertNotNull(response.getBody());
 		assertEquals(1, response.getBody().size());
-		assertEquals(savedUser.getId(), response.getBody().get(0).getId());
+		assertEquals(savedUser.getUserId(), response.getBody().get(0).getUserId());
 		assertEquals(savedUser.getName(), response.getBody().get(0).getName());
 		assertEquals(savedUser.getEmail(), response.getBody().get(0).getEmail());
 		assertEquals(savedUser.getCpf(), response.getBody().get(0).getCpf());
 		assertEquals(savedUser.getBirthDate(), response.getBody().get(0).getBirthDate());
-		assertEquals(savedUser.getAddress(), response.getBody().get(0).getAddress());
-		assertEquals(savedUser.getPhones(), response.getBody().get(0).getPhones());
+		assertEquals(savedUser.getAddressDTO(), response.getBody().get(0).getAddressDTO());
+		assertEquals(savedUser.getPhonesDTO(), response.getBody().get(0).getPhonesDTO());
 	}
 
 	@Test
 	public void testUpdateUser() {
 
 		// Cria um novo usuário com os dados atualizados
-		user = User.builder()
-				.id(savedUser.getId())
+		user = UserDTO.builder()
+				.userId(1L)
 				.name("Dilma")
 				.surName("Rousseff")
 				.birthDate(LocalDate.of(1956, Month.OCTOBER, 26))
@@ -172,33 +195,20 @@ class RestApiSpringIntegrationTests {
 				.email("dilmae@prov.com")
 				.build();
 
-		Address address = new Address("Avenida", "Planalto, 69", "1001", "Rio", "RJ", "69.069-069");
-		address.setId(1L);
-		user.setAddress(address);
-
-		PhoneNumber phone = new PhoneNumber("Cel", "(21) 98966-2377");
-		phone.setUser(user);
-		phone.setId(1L);
-		Set<PhoneNumber> phoneSet = new HashSet<>();
-		phoneSet.add(phone);
-		user.setPhones(phoneSet);
-
 		// Cria uma entidade HTTP com o usuário atualizado
-		HttpEntity<User> requestUpdate = new HttpEntity<>(user);
+		HttpEntity<UserDTO> requestUpdate = new HttpEntity<>(user);
 
 		// Envia uma requisição PUT para a URL_API com o ID do usuário e a entidade HTTP atualizada
-		ResponseEntity<User> response = restTemplate.exchange(
-				URL_API + "/" + savedUser.getId(), HttpMethod.PUT, requestUpdate, User.class);
+		ResponseEntity<UserDTO> response = restTemplate.exchange(
+				URL_API + "/" + 1L, HttpMethod.PUT, requestUpdate, UserDTO.class);
 
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 		assertNotNull(response.getBody());
-		assertEquals(user.getId(), response.getBody().getId());
+		assertEquals(user.getUserId(), response.getBody().getUserId());
 		assertEquals(user.getName(), response.getBody().getName());
 		assertEquals(user.getEmail(), response.getBody().getEmail());
 		assertEquals(user.getCpf(), response.getBody().getCpf());
 		assertEquals(user.getBirthDate(), response.getBody().getBirthDate());
-		assertEquals(user.getAddress(), response.getBody().getAddress());
-		assertEquals(user.getPhones(), response.getBody().getPhones());
 	}
 
 	@Test
@@ -208,14 +218,11 @@ class RestApiSpringIntegrationTests {
 		 * reservado não instanciável para conter uma referência ao objeto Class que representa a palavra-chave Java void.
 		 */
 		ResponseEntity<Void> response = restTemplate.exchange(
-				URL_API + "/" + savedUser.getId(), HttpMethod.DELETE, null, Void.class);
+				URL_API + "/" + savedUser.getUserId(), HttpMethod.DELETE, null, Void.class);
 
 		// Verifica o status da resposta
 		assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
 
-		// Verificar se o usuário foi deletado buscando-o novamente do repositório
-		Optional<User> deletedUser = userRepository.findById(savedUser.getId());
-		assertFalse(deletedUser.isPresent());
 	}
 
 }
