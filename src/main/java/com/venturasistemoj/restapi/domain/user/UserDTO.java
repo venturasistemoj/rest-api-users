@@ -1,15 +1,14 @@
 package com.venturasistemoj.restapi.domain.user;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Objects;
-
-import javax.validation.constraints.NotNull;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.venturasistemoj.restapi.domain.address.AddressDTO;
 import com.venturasistemoj.restapi.domain.phone.PhoneNumberDTO;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -40,7 +39,7 @@ public class UserDTO {
 	private AddressDTO addressDTO;
 
 	@JsonManagedReference
-	private List<PhoneNumberDTO> phonesDTO;
+	private Set<PhoneNumberDTO> phonesDTO;
 
 	@Override
 	public boolean equals(Object obj) {

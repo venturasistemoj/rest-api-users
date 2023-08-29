@@ -1,10 +1,9 @@
 package com.venturasistemoj.restapi.domain.address;
 
-import javax.validation.constraints.NotNull;
-
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.venturasistemoj.restapi.domain.user.UserDTO;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -35,4 +34,12 @@ public class AddressDTO {
 	@JsonBackReference
 	@NotNull
 	private UserDTO userDTO;
+
+	@Override
+	public String toString() {
+		return "AddressDTO [addressId=" + addressId + ", publicPlace=" + publicPlace + ", streetAddress="
+				+ streetAddress + ", complement=" + complement + ", city=" + city + ", state=" + state + ", zipCode="
+				+ zipCode + "]";
+	}
+
 }

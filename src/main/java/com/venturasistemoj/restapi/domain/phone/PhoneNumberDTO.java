@@ -1,10 +1,9 @@
 package com.venturasistemoj.restapi.domain.phone;
 
-import javax.validation.constraints.NotNull;
-
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.venturasistemoj.restapi.domain.user.UserDTO;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -31,5 +30,10 @@ public class PhoneNumberDTO {
 	@JsonBackReference
 	@NotNull
 	private UserDTO userDTO;
+
+	@Override
+	public String toString() {
+		return "PhoneNumberDTO [phoneId=" + phoneId + ", type=" + type + ", number=" + number + "]";
+	}
 
 }

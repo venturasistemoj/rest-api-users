@@ -2,10 +2,10 @@ package com.venturasistemoj.restapi.domain.address;
 
 import java.util.List;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
+
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * [EN] Service interface to address business logic.

@@ -1,6 +1,6 @@
 package com.venturasistemoj.restapi.domain.phone;
 
-import java.util.List;
+import java.util.Set;
 
 import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.IterableMapping;
@@ -27,8 +27,8 @@ public interface PhoneMapper {
 	PhoneNumberDTO phoneNumberToPhoneNumberDTO(PhoneNumber phoneNumber);
 
 	@IterableMapping(elementTargetType = PhoneNumber.class)
-	List<PhoneNumber> phoneNumbersDTOToPhoneNumbers(List<PhoneNumberDTO> phones);
+	Set<PhoneNumber> phoneNumbersDTOToPhoneNumbers(Set<PhoneNumberDTO> phones);
 
 	@InheritInverseConfiguration
-	List<PhoneNumberDTO> phoneNumbersToPhoneNumbersDTO(List<PhoneNumber> phones);
+	Set<PhoneNumberDTO> phoneNumbersToPhoneNumbersDTO(Set<PhoneNumber> phones);
 }

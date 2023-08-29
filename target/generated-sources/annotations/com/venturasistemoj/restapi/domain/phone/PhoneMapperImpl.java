@@ -2,14 +2,14 @@ package com.venturasistemoj.restapi.domain.phone;
 
 import com.venturasistemoj.restapi.domain.user.User;
 import com.venturasistemoj.restapi.domain.user.UserDTO;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import javax.annotation.processing.Generated;
 import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2023-06-23T12:06:45-0300",
+    date = "2023-08-21T19:02:42-0300",
     comments = "version: 1.5.5.Final, compiler: Eclipse JDT (IDE) 3.33.0.v20230218-1114, environment: Java 17.0.5 (Oracle Corporation)"
 )
 @Component
@@ -48,31 +48,31 @@ public class PhoneMapperImpl implements PhoneMapper {
     }
 
     @Override
-    public List<PhoneNumber> phoneNumbersDTOToPhoneNumbers(List<PhoneNumberDTO> phones) {
+    public Set<PhoneNumber> phoneNumbersDTOToPhoneNumbers(Set<PhoneNumberDTO> phones) {
         if ( phones == null ) {
             return null;
         }
 
-        List<PhoneNumber> list = new ArrayList<PhoneNumber>( phones.size() );
+        Set<PhoneNumber> set = new LinkedHashSet<PhoneNumber>( Math.max( (int) ( phones.size() / .75f ) + 1, 16 ) );
         for ( PhoneNumberDTO phoneNumberDTO : phones ) {
-            list.add( phoneNumberDTOToPhoneNumber( phoneNumberDTO ) );
+            set.add( phoneNumberDTOToPhoneNumber( phoneNumberDTO ) );
         }
 
-        return list;
+        return set;
     }
 
     @Override
-    public List<PhoneNumberDTO> phoneNumbersToPhoneNumbersDTO(List<PhoneNumber> phones) {
+    public Set<PhoneNumberDTO> phoneNumbersToPhoneNumbersDTO(Set<PhoneNumber> phones) {
         if ( phones == null ) {
             return null;
         }
 
-        List<PhoneNumberDTO> list = new ArrayList<PhoneNumberDTO>( phones.size() );
+        Set<PhoneNumberDTO> set = new LinkedHashSet<PhoneNumberDTO>( Math.max( (int) ( phones.size() / .75f ) + 1, 16 ) );
         for ( PhoneNumber phoneNumber : phones ) {
-            list.add( phoneNumberToPhoneNumberDTO1( phoneNumber ) );
+            set.add( phoneNumberToPhoneNumberDTO1( phoneNumber ) );
         }
 
-        return list;
+        return set;
     }
 
     protected User userDTOToUser(UserDTO userDTO) {

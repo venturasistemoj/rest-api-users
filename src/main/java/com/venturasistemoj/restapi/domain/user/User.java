@@ -1,25 +1,24 @@
 package com.venturasistemoj.restapi.domain.user;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Objects;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.venturasistemoj.restapi.domain.address.Address;
 import com.venturasistemoj.restapi.domain.phone.PhoneNumber;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 
 /**
@@ -92,9 +91,9 @@ public class User {
 	 * <code>user</code> (dona da relação) na classe <code>PhoneNumber</code>, isso significa que a tabela phones
 	 * possui uma coluna <code>user_id</code> que faz referência à chave primária da tabela users.
 	 */
-	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL) // fetch = FetchType.EAGER
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	@JsonManagedReference
-	private List<PhoneNumber> phones;
+	private Set<PhoneNumber> phones;
 
 	/**
 	 * As anotações <code>@JsonManagedReference</code> e <code>@JsonBackReference</code>

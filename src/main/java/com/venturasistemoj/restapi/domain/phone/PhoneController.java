@@ -1,6 +1,6 @@
 package com.venturasistemoj.restapi.domain.phone;
 
-import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
@@ -50,7 +50,7 @@ public class PhoneController {
 	@PutMapping("/{userId}")
 	public ResponseEntity<?> updatePhoneNumber(@PathVariable Long userId, @RequestBody PhoneNumberDTO phoneDTO) {
 		try {
-			List<PhoneNumberDTO> updatedPhones = phoneService.updatePhoneNumber(userId, phoneDTO);
+			Set<PhoneNumberDTO> updatedPhones = phoneService.updatePhoneNumber(userId, phoneDTO);
 			return ResponseEntity.ok(updatedPhones);
 		} catch (NotFoundException e) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(NOT_FOUND);
@@ -63,7 +63,7 @@ public class PhoneController {
 	public ResponseEntity<?> getPhonesByUserId(@PathVariable Long userId) {
 
 		try {
-			List<PhoneNumberDTO> phones = phoneService.getPhonesByUserId(userId);
+			Set<PhoneNumberDTO> phones = phoneService.getPhonesByUserId(userId);
 			return ResponseEntity.ok(phones);
 		} catch (NotFoundException e) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(NOT_FOUND);

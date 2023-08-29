@@ -93,11 +93,10 @@ class JUnitUserTests {
 				.surName("Rousseff")
 				.birthDate(LocalDate.of(1956, Month.OCTOBER, 26))
 				.cpf("789.456.123-10")
-				.email("dilmae@prov.com")
+				.email("dilma@prov.com")
 				.build();
 
 		final Long userId = newUser.getUserId();
-
 		when(userService.updateUser(userId, newUser)).thenReturn(newUser);
 		when(userService.getUserById(userId)).thenReturn(newUser);
 
@@ -125,13 +124,13 @@ class JUnitUserTests {
 
 		List<UserDTO> userList = new ArrayList<>();
 		userList.add(userDTO);
-
 		when(userService.getUsers()).thenReturn(userList);
 
 		ResponseEntity<?> response = userController.getUsers();
 
+		@SuppressWarnings("unchecked")
+		List<UserDTO> expectedList = (List<UserDTO>) response.getBody();
 		assertEquals(HttpStatus.OK, response.getStatusCode());
-		@SuppressWarnings("unchecked") List<UserDTO> expectedList = (List<UserDTO>) response.getBody();
 		assertTrue(userList.containsAll(expectedList));
 		assertEquals(userList, response.getBody());
 	}

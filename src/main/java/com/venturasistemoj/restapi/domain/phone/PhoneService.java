@@ -1,11 +1,11 @@
 package com.venturasistemoj.restapi.domain.phone;
 
-import java.util.List;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import java.util.Set;
 
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
+
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * [EN] Service interface to phone number business logic.
@@ -20,12 +20,12 @@ public interface PhoneService {
 	PhoneNumberDTO createPhoneNumber(@NotNull Long userId, @Valid PhoneNumberDTO phoneDTO)
 			throws NotFoundException, IllegalStateException, IllegalPhoneStateException;
 
-	List<PhoneNumberDTO> updatePhoneNumber(@NotNull Long userId,  @Valid PhoneNumberDTO phonesDTO)
+	Set<PhoneNumberDTO> updatePhoneNumber(@NotNull Long userId,  @Valid PhoneNumberDTO phonesDTO)
 			throws NotFoundException, IllegalPhoneStateException;
 
-	List<PhoneNumberDTO> getPhonesByUserId(@NotNull Long userId) throws NotFoundException;
+	Set<PhoneNumberDTO> getPhonesByUserId(@NotNull Long userId) throws NotFoundException;
 
-	List<PhoneNumberDTO> getPhoneNumbers() throws NotFoundException;
+	Set<PhoneNumberDTO> getPhoneNumbers() throws NotFoundException;
 
 	void deletePhoneNumber(@NotNull Long userId, @Valid PhoneNumberDTO phoneDTO)
 			throws NotFoundException, IllegalPhoneStateException;

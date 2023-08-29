@@ -8,8 +8,8 @@ import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
 import java.time.Month;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,6 +35,7 @@ public class JUnitPhoneTests {
 
 	private UserDTO userDTO;
 	private PhoneNumberDTO numberDTO;
+	private final Long userId = 1L;
 
 	@BeforeEach
 	void setup() {
@@ -43,7 +44,7 @@ public class JUnitPhoneTests {
 		MockitoAnnotations.openMocks(this);
 
 		userDTO = UserDTO.builder()
-				.userId(1L)
+				.userId(userId)
 				.name("Luiz Inacio")
 				.surName("da Silva")
 				.birthDate(LocalDate.of(1972, Month.FEBRUARY, 22))
@@ -58,7 +59,7 @@ public class JUnitPhoneTests {
 				.build();
 
 		// Associa conjunto de telefones a usuário
-		List<PhoneNumberDTO> phonesDTO = new ArrayList<>();
+		Set<PhoneNumberDTO> phonesDTO = new HashSet<>();
 		phonesDTO.add(numberDTO);
 		userDTO.setPhonesDTO(phonesDTO);
 
@@ -69,15 +70,12 @@ public class JUnitPhoneTests {
 	@Test
 	void testCreatePhoneNumber() throws IllegalArgumentException, NotFoundException {
 
-		final Long userId = userDTO.getUserId();
-
 		when(phoneService.createPhoneNumber(userId, numberDTO)).thenReturn(numberDTO);
 
 		ResponseEntity<?> response = phoneController.createPhoneNumber(userId, numberDTO);
 
 		assertEquals(HttpStatus.CREATED, response.getStatusCode());
 		assertEquals(numberDTO, response.getBody());
-
 	}
 
 	@Test
@@ -89,10 +87,8 @@ public class JUnitPhoneTests {
 				.number("(21) 98966-2377")
 				.build();
 
-		List<PhoneNumberDTO> newPhonesDTO = new ArrayList<>();
+		Set<PhoneNumberDTO> newPhonesDTO = new HashSet<>();
 		newPhonesDTO.add(newPhone);
-
-		final Long userId = userDTO.getUserId();
 
 		when(phoneService.updatePhoneNumber(userId, newPhone)).thenReturn(newPhonesDTO);
 		when(phoneService.getPhonesByUserId(userId)).thenReturn(newPhonesDTO);
@@ -100,31 +96,31 @@ public class JUnitPhoneTests {
 		ResponseEntity<?> response = phoneController.updatePhoneNumber(userId, newPhone);
 
 		assertEquals(HttpStatus.OK, response.getStatusCode());
-		@SuppressWarnings("unchecked") List<PhoneNumberDTO> expectedPhones = (List<PhoneNumberDTO>) response.getBody();
+		@SuppressWarnings("unchecked")
+		Set<PhoneNumberDTO> expectedPhones = (Set<PhoneNumberDTO>) response.getBody();
 		assertTrue(expectedPhones.containsAll(newPhonesDTO));
 	}
 
 	@Test
 	void testGetPhonesByUserId() throws NotFoundException {
 
-		List<PhoneNumberDTO> phoneSet = new ArrayList<>();
+		Set<PhoneNumberDTO> phoneSet = new HashSet<>();
 		phoneSet.add(numberDTO);
-
-		final Long userId = userDTO.getUserId();
 
 		when(phoneService.getPhonesByUserId(userId)).thenReturn(phoneSet);
 
 		ResponseEntity<?> response = phoneController.getPhonesByUserId(userId);
 
 		assertEquals(HttpStatus.OK, response.getStatusCode());
-		@SuppressWarnings("unchecked") List<PhoneNumberDTO> expectedPhones = (List<PhoneNumberDTO>) response.getBody();
+		@SuppressWarnings("unchecked")
+		Set<PhoneNumberDTO> expectedPhones = (Set<PhoneNumberDTO>) response.getBody();
 		assertTrue(expectedPhones.containsAll(phoneSet));
 	}
 
 	@Test
 	void testGetPhoneNumbers() throws NotFoundException {
 
-		List<PhoneNumberDTO> phoneSet = new ArrayList<>();
+		Set<PhoneNumberDTO> phoneSet = new HashSet<>();
 		phoneSet.add(numberDTO);
 
 		when(phoneService.getPhoneNumbers()).thenReturn(phoneSet);
@@ -132,7 +128,8 @@ public class JUnitPhoneTests {
 		ResponseEntity<?> response = phoneController.getPhoneNumbers();
 
 		assertEquals(HttpStatus.OK, response.getStatusCode());
-		@SuppressWarnings("unchecked") List<PhoneNumberDTO> expectedPhones = (List<PhoneNumberDTO>) response.getBody();
+		@SuppressWarnings("unchecked")
+		Set<PhoneNumberDTO> expectedPhones = (Set<PhoneNumberDTO>) response.getBody();
 		assertTrue(expectedPhones.containsAll(phoneSet));
 		assertEquals(phoneSet, response.getBody());
 	}
@@ -140,10 +137,8 @@ public class JUnitPhoneTests {
 	@Test
 	void testDeletePhoneNumber() throws NotFoundException {
 
-		List<PhoneNumberDTO> phoneSet = new ArrayList<>();
+		Set<PhoneNumberDTO> phoneSet = new HashSet<>();
 		phoneSet.add(numberDTO);
-
-		final Long userId = userDTO.getUserId();
 
 		when(phoneService.getPhonesByUserId(userId)).thenReturn(phoneSet);
 

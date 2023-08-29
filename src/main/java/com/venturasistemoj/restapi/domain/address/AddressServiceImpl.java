@@ -3,9 +3,6 @@ package com.venturasistemoj.restapi.domain.address;
 import java.util.List;
 import java.util.Optional;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.stereotype.Service;
@@ -14,6 +11,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.venturasistemoj.restapi.domain.user.User;
 import com.venturasistemoj.restapi.domain.user.UserMapper;
 import com.venturasistemoj.restapi.domain.user.UserRepository;
+
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * [EN] Class implementing the AddressService interface for managing business logic related to adresses.
@@ -33,6 +33,8 @@ public class AddressServiceImpl implements AddressService {
 	@Autowired private UserRepository userRepository;
 	@Autowired private UserMapper userMapper;
 
+	private static final String INCONPLETE_ADDRESS_DATA = "Dados do endereço incompletos!";
+
 	/**
 	 * Cria um novo endereço para um usuário existente.
 	 * Caso o usuário não exista, lança NotFoundException.
@@ -42,7 +44,7 @@ public class AddressServiceImpl implements AddressService {
 	 */
 	@Override
 	public AddressDTO createAddress(@NotNull Long userId, @Valid AddressDTO addressDTO)
-			throws IllegalStateException, NotFoundException, IllegalAddressStateException {
+			throws NotFoundException, IllegalStateException, IllegalAddressStateException {
 
 		User existingUser = checkUser(userId); // RN3
 
@@ -50,7 +52,7 @@ public class AddressServiceImpl implements AddressService {
 			throw new IllegalStateException(); // RN4
 
 		if( ! checkAddressState(addressDTO))
-			throw new IllegalAddressStateException("Dados do endereço incompletos!");
+			throw new IllegalAddressStateException(INCONPLETE_ADDRESS_DATA);
 
 		addressDTO.setUserDTO(userMapper.userToUserDTO(existingUser)); // associa usuário a endereço
 		Address savedAddress = addressRepository.save(addressMapper.addressDTOToAddress(addressDTO));
@@ -75,7 +77,7 @@ public class AddressServiceImpl implements AddressService {
 			throw new NotFoundException();
 
 		if( ! checkAddressState(addressDTO))
-			throw new IllegalAddressStateException("Dados do endereço incompletos!");
+			throw new IllegalAddressStateException(INCONPLETE_ADDRESS_DATA);
 
 		if(existingAddress.equals(addressMapper.addressDTOToAddress(addressDTO)))
 			throw new IllegalArgumentException();
@@ -154,8 +156,11 @@ public class AddressServiceImpl implements AddressService {
 	// verifica a consistência dos dados do endereço
 	private boolean checkAddressState(AddressDTO addressDTO) {
 
-		if(addressDTO.getPublicPlace() == null || addressDTO.getStreetAddress() == null
-				|| addressDTO.getCity() == null || addressDTO.getState() == null || addressDTO.getZipCode() == null)
+		if( addressDTO.getPublicPlace() == null
+				|| addressDTO.getStreetAddress() == null
+				|| addressDTO.getCity() == null
+				|| addressDTO.getState() == null
+				|| addressDTO.getZipCode() == null )
 			return false;
 
 		return true;

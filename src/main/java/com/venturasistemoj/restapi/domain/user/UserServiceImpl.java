@@ -2,13 +2,13 @@ package com.venturasistemoj.restapi.domain.user;
 
 import java.util.List;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * [EN] Class implementing the UserService interface for managing business logic related to users.
@@ -29,7 +29,7 @@ public class UserServiceImpl implements UserService {
 	 * Cria um usuário.
 	 * Converte UserDTO em User com UserMapper, salva User na base de dados.
 	 * Converte o User salvo em UserDTO e retorna esse DTO.
-	 * RN1: Caso userDTO esteja corrompido ou possua cpf duplicado, lança IllegalUserStateException.
+	 * RN1: Caso os dados do usuário estejam corrompidos ou possua cpf duplicado, lança IllegalUserStateException.
 	 * RN2: Caso o mesmo usuário esteja sendo cadastrado com cpf diferente, lança IllegalArgumentException.
 	 */
 	@Override
@@ -126,7 +126,7 @@ public class UserServiceImpl implements UserService {
 
 	// verifica a consistência dos dados do usuário
 	private boolean checkUserState(UserDTO userDTO) {
-		if(		userDTO.getName() == null
+		if( userDTO.getName() == null
 				|| userDTO.getSurName() == null
 				|| userDTO.getBirthDate() == null
 				|| userDTO.getCpf() == null
@@ -139,7 +139,7 @@ public class UserServiceImpl implements UserService {
 	// verifica duplicidade de usuário com cpf diferente
 	private boolean checkUserCpf(User existingUser, UserDTO userDTO) {
 
-		if(		userDTO.getName().equals(existingUser.getName())
+		if( userDTO.getName().equals(existingUser.getName())
 				&& userDTO.getSurName().equals(existingUser.getSurName())
 				&& userDTO.getBirthDate().equals(existingUser.getBirthDate())
 				&& userDTO.getEmail().equals(existingUser.getEmail())

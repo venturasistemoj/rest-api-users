@@ -1,11 +1,8 @@
 package com.venturasistemoj.restapi.domain.phone;
 
-import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
@@ -15,6 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.venturasistemoj.restapi.domain.user.User;
 import com.venturasistemoj.restapi.domain.user.UserMapper;
 import com.venturasistemoj.restapi.domain.user.UserRepository;
+
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * [EN] Class implementing the PhoneService interface for managing business logic related to PhoneNumbers.
@@ -34,6 +34,8 @@ public class PhoneServiceImpl implements PhoneService {
 	@Autowired private UserRepository userRepository;
 	@Autowired private UserMapper userMapper;
 
+	private static final String INCONPLETE_PHONE_DATA = "Dados do telefone incompletos!";
+
 	/**
 	 * Cria um novo telefone para um usuário existente.
 	 * Caso o usuário não exista, lança NotFoundException.
@@ -48,12 +50,13 @@ public class PhoneServiceImpl implements PhoneService {
 		User existingUser = checkUser(userId); // RN5
 
 		if(phoneDTO.getType() == null || phoneDTO.getNumber() == null)
-			throw new IllegalPhoneStateException("Dados do telefone incompletos!");
+			throw new IllegalPhoneStateException(INCONPLETE_PHONE_DATA);
 
-		existingUser.getPhones().forEach(phone -> {
-			if(phone.getNumber().equals(phoneDTO.getNumber()))
-				throw new IllegalStateException("Número de telefone duplicado!");
-		});
+		/* O seguinte idioma, assim como a classe PhoneComparator, tornaram-se desnecessários com
+		 * a substituição da estrutura de dados dos telefones da API de List para Set*/
+
+		//if (existingUser.getPhones().contains(phoneMapper.phoneNumberDTOToPhoneNumber(phoneDTO)))
+		//throw new IllegalStateException("Número de telefone duplicado!");
 
 		phoneDTO.setUserDTO(userMapper.userToUserDTO(existingUser)); // associa usuário a telefone
 		PhoneNumber savedPhoneNumber = phoneRepository.save(phoneMapper.phoneNumberDTOToPhoneNumber(phoneDTO));
@@ -61,22 +64,21 @@ public class PhoneServiceImpl implements PhoneService {
 	}
 
 	/**
-	 * Atualiza um telefone da lista de telefones de um usuário existente.
+	 * Atualiza um telefone no conjunto de telefones de um usuário existente.
 	 * Caso o usuário não exista, lança NotFoundException.
 	 * Caso os dados do telefone estejam corrompidos, lança IllegalPhoneStateException.
 	 * Retorna a lista de telefones atualizada.
 	 */
 	@Override
 	@Transactional(rollbackFor = IllegalArgumentException.class)
-	public List<PhoneNumberDTO> updatePhoneNumber(@NotNull Long userId, @Valid PhoneNumberDTO phoneDTO)
+	public Set<PhoneNumberDTO> updatePhoneNumber(@NotNull Long userId, @Valid PhoneNumberDTO phoneDTO)
 			throws NotFoundException, IllegalPhoneStateException {
 
-		User existingUser = checkUser(userId);
-
 		if( ! checkPhoneState(phoneDTO))
-			throw new IllegalPhoneStateException("Dados do telefone incompletos!");
+			throw new IllegalPhoneStateException(INCONPLETE_PHONE_DATA);
 
-		List<PhoneNumber> userPhones = phoneRepository.findAllByUser(existingUser);
+		User existingUser = checkUser(userId);
+		Set<PhoneNumber> userPhones = phoneRepository.findAllByUser(existingUser);
 
 		if(userPhones.isEmpty())
 			throw new NotFoundException();
@@ -95,12 +97,12 @@ public class PhoneServiceImpl implements PhoneService {
 	}
 
 	/**
-	 * Obtém a lista de telefones de um usuário existente.
+	 * Obtém o conjunto de telefones de um usuário existente.
 	 * Caso o usuário não exista ou não haja telefones cadastrados, lança NotFoundException.
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public List<PhoneNumberDTO> getPhonesByUserId(@NotNull Long userId) throws NotFoundException {
+	public Set<PhoneNumberDTO> getPhonesByUserId(@NotNull Long userId) throws NotFoundException {
 
 		User existingUser = checkUser(userId);
 
@@ -108,7 +110,7 @@ public class PhoneServiceImpl implements PhoneService {
 			return phoneRepository.findAllByUser(existingUser)
 					.stream()
 					.map(phoneMapper::phoneNumberToPhoneNumberDTO)
-					.collect(Collectors.toList());
+					.collect(Collectors.toSet());
 		else
 			throw new NotFoundException();
 	}
@@ -119,16 +121,20 @@ public class PhoneServiceImpl implements PhoneService {
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public List<PhoneNumberDTO> getPhoneNumbers() throws NotFoundException {
+	public Set<PhoneNumberDTO> getPhoneNumbers() throws NotFoundException {
 
-		if(phoneRepository.findAll().isEmpty())
+		Set<PhoneNumber> allPhones = phoneRepository.findAll()
+				.stream()
+				.collect(Collectors.toSet());
+
+		if(allPhones.isEmpty())
 			throw new NotFoundException();
 
-		return phoneMapper.phoneNumbersToPhoneNumbersDTO(phoneRepository.findAll());
+		return phoneMapper.phoneNumbersToPhoneNumbersDTO(allPhones);
 	}
 
 	/**
-	 * Remove um telefone da lista de telefones de um usuário existente.
+	 * Remove um telefone do conjunto de telefones de um usuário existente.
 	 * Caso o usuário não exista, lança NotFoundException.
 	 * Caso os dados do telefone a ser removido estejam corrompidos, lança IllegalPhoneStateException.
 	 */
@@ -137,12 +143,12 @@ public class PhoneServiceImpl implements PhoneService {
 	public void deletePhoneNumber(@NotNull Long userId, @Valid PhoneNumberDTO phoneDTO)
 			throws NotFoundException, IllegalPhoneStateException {
 
+		PhoneNumber existingPhone = phoneRepository.findById(phoneDTO.getPhoneId()).orElseThrow(NotFoundException::new);
+
 		User existingUser = checkUser(userId);
 
 		if( ! checkPhoneState(phoneDTO))
-			throw new IllegalPhoneStateException("Dados do telefone incompletos!");
-
-		PhoneNumber existingPhone = phoneRepository.findById(phoneDTO.getPhoneId()).orElseThrow(NotFoundException::new);
+			throw new IllegalPhoneStateException(INCONPLETE_PHONE_DATA);
 
 		existingUser.getPhones().remove(existingPhone); // desassocia telefone da lista do usuário
 		phoneRepository.deleteById(existingPhone.getPhoneId()); // exclui o telefone somente deste usuário

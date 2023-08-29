@@ -1,6 +1,6 @@
 package com.venturasistemoj.restapi.domain.phone;
 
-import java.util.List;
+import java.util.Set;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -20,5 +20,5 @@ import com.venturasistemoj.restapi.domain.user.User;
  */
 public interface PhoneRepository extends JpaRepository<PhoneNumber, Long> {
 
-	List<PhoneNumber> findAllByUser(User user);
+	Set<PhoneNumber> findAllByUser(User user);
 }

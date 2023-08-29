@@ -34,6 +34,7 @@ public class JUnitAddressTests {
 
 	private UserDTO userDTO;
 	private AddressDTO addressDTO;
+	private final Long userId = 1L;
 
 	@BeforeEach
 	void setup() {
@@ -42,7 +43,7 @@ public class JUnitAddressTests {
 		MockitoAnnotations.openMocks(this);
 
 		userDTO = UserDTO.builder()
-				.userId(1L)
+				.userId(userId)
 				.name("Luiz Inacio")
 				.surName("da Silva")
 				.birthDate(LocalDate.of(1972, Month.FEBRUARY, 22))
@@ -62,12 +63,11 @@ public class JUnitAddressTests {
 
 		userDTO.setAddressDTO(addressDTO); // atribui endereço a usuário
 		addressDTO.setUserDTO(userDTO); // atribui usuário a endereço
+
 	}
 
 	@Test
 	void testCreateAddress() throws IllegalArgumentException, NotFoundException {
-
-		final Long userId = addressDTO.getUserDTO().getUserId();
 
 		when(addressService.createAddress(userId, addressDTO)).thenReturn(addressDTO);
 
@@ -81,10 +81,8 @@ public class JUnitAddressTests {
 	@Test
 	void testUpdateAddress() throws IllegalArgumentException, NotFoundException {
 
-		final Long userId = addressDTO.getUserDTO().getUserId();
-
 		UserDTO newUser = UserDTO.builder()
-				.userId(1L)
+				.userId(userId)
 				.name("Dilma")
 				.surName("Rousseff")
 				.birthDate(LocalDate.of(1956, Month.OCTOBER, 26))
@@ -119,8 +117,6 @@ public class JUnitAddressTests {
 
 	void testGetAddressByUserId() throws NotFoundException {
 
-		final Long userId = addressDTO.getUserDTO().getUserId();
-
 		when(addressService.getAddressByUserId(userId)).thenReturn(addressDTO);
 
 		ResponseEntity<?> response = addressController.getAddressByUserId(userId);
@@ -146,8 +142,6 @@ public class JUnitAddressTests {
 
 	@Test
 	void testDeleteAddress() throws NotFoundException {
-
-		final Long userId = addressDTO.getUserDTO().getUserId();
 
 		when(addressService.getAddressByUserId(userId)).thenReturn(addressDTO);
 
