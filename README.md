@@ -12,7 +12,7 @@ The application provides a controller for each API that maps entities into DTOs 
 
 The application also implements a service layer for each controller, which interacts with the respective repositories for CRUD operations for `User`, `Address` and `PhoneNumber` entities.
 
-Some custom exceptions like `IllegalUserStateException`, `IllegalAddressStateException` and `IllegalPhoneStateException was implemented for handle request exceptions.
+Some custom exceptions like `IllegalUserStateException`, `IllegalAddressStateException` and `IllegalPhoneStateException` was implemented for handle request exceptions.
 
 The application includes unit tests and integration tests classes with **JUnit**, **Mockito** and **Spring Test**.
 
