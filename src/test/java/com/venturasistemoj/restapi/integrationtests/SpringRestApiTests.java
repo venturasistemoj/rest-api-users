@@ -219,7 +219,7 @@ class SpringRestApiTests {
 	}
 
 	/**
-	 * Sends a GET request for the user address .
+	 * Sends a GET request for the user address with the user ID in the path variable.
 	 * Checks the response status and returned user data with helper method.
 	 * @throws NotFoundException
 	 * @throws IllegalStateException
