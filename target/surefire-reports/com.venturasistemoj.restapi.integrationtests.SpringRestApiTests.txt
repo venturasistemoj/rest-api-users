@@ -1,22 +1,19 @@
 -------------------------------------------------------------------------------
 Test set: com.venturasistemoj.restapi.integrationtests.SpringRestApiTests
 -------------------------------------------------------------------------------
-Tests run: 15, Failures: 0, Errors: 15, Skipped: 0, Time elapsed: 5.128 s <<< FAILURE! - in com.venturasistemoj.restapi.integrationtests.SpringRestApiTests
-com.venturasistemoj.restapi.integrationtests.SpringRestApiTests.getPhonesTest  Time elapsed: 0.72 s  <<< ERROR!
-org.hibernate.LazyInitializationException: failed to lazily initialize a collection of role: com.venturasistemoj.restapi.domain.user.User.phones: could not initialize proxy - no Session
-	at org.hibernate.collection.spi.AbstractPersistentCollection.throwLazyInitializationException(AbstractPersistentCollection.java:635)
-	at org.hibernate.collection.spi.AbstractPersistentCollection.withTemporarySessionIfNeeded(AbstractPersistentCollection.java:218)
-	at org.hibernate.collection.spi.AbstractPersistentCollection.readSize(AbstractPersistentCollection.java:148)
-	at org.hibernate.collection.spi.PersistentSet.size(PersistentSet.java:151)
-	at com.venturasistemoj.restapi.domain.phone.PhoneMapperImpl.phoneNumbersToPhoneNumbersDTO(PhoneMapperImpl.java:77)
-	at com.venturasistemoj.restapi.domain.user.UserMapperImpl.userToUserDTO(UserMapperImpl.java:64)
-	at com.venturasistemoj.restapi.domain.phone.PhoneServiceImpl.createPhoneNumber(PhoneServiceImpl.java:65)
-	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:578)
-	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:343)
-	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:704)
-	at com.venturasistemoj.restapi.domain.phone.PhoneServiceImpl$$SpringCGLIB$$0.createPhoneNumber(<generated>)
-	at com.venturasistemoj.restapi.integrationtests.SpringRestApiTests.getPhonesTest(SpringRestApiTests.java:299)
+Tests run: 15, Failures: 0, Errors: 15, Skipped: 0, Time elapsed: 5.247 s <<< FAILURE! - in com.venturasistemoj.restapi.integrationtests.SpringRestApiTests
+com.venturasistemoj.restapi.integrationtests.SpringRestApiTests.getPhonesTest  Time elapsed: 0.852 s  <<< ERROR!
+org.springframework.http.converter.HttpMessageConversionException: Type definition error: [simple type, class com.venturasistemoj.restapi.domain.phone.PhoneNumberDTO]
+	at org.springframework.http.converter.json.AbstractJackson2HttpMessageConverter.readJavaType(AbstractJackson2HttpMessageConverter.java:403)
+	at org.springframework.http.converter.json.AbstractJackson2HttpMessageConverter.read(AbstractJackson2HttpMessageConverter.java:354)
+	at org.springframework.web.client.HttpMessageConverterExtractor.extractData(HttpMessageConverterExtractor.java:103)
+	at org.springframework.web.client.RestTemplate$ResponseEntityResponseExtractor.extractData(RestTemplate.java:1132)
+	at org.springframework.web.client.RestTemplate$ResponseEntityResponseExtractor.extractData(RestTemplate.java:1115)
+	at org.springframework.web.client.RestTemplate.doExecute(RestTemplate.java:865)
+	at org.springframework.web.client.RestTemplate.execute(RestTemplate.java:764)
+	at org.springframework.web.client.RestTemplate.exchange(RestTemplate.java:675)
+	at org.springframework.boot.test.web.client.TestRestTemplate.exchange(TestRestTemplate.java:775)
+	at com.venturasistemoj.restapi.integrationtests.SpringRestApiTests.getPhonesTest(SpringRestApiTests.java:291)
 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
 	at java.base/java.lang.reflect.Method.invoke(Method.java:578)
 	at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:727)
@@ -86,8 +83,31 @@ org.hibernate.LazyInitializationException: failed to lazily initialize a collect
 	at org.apache.maven.surefire.booter.ForkedBooter.execute(ForkedBooter.java:162)
 	at org.apache.maven.surefire.booter.ForkedBooter.run(ForkedBooter.java:507)
 	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:495)
+Caused by: com.fasterxml.jackson.databind.exc.InvalidDefinitionException: Invalid definition for property 'userDTO' (of type `com.venturasistemoj.restapi.domain.phone.PhoneNumberDTO`): No non-constructor mutator available
+ at [Source: (org.springframework.util.StreamUtils$NonClosingInputStream); line: 1, column: 1]
+	at com.fasterxml.jackson.databind.exc.InvalidDefinitionException.from(InvalidDefinitionException.java:62)
+	at com.fasterxml.jackson.databind.DeserializationContext.reportBadPropertyDefinition(DeserializationContext.java:1910)
+	at com.fasterxml.jackson.databind.deser.BeanDeserializerFactory.constructSettableProperty(BeanDeserializerFactory.java:905)
+	at com.fasterxml.jackson.databind.deser.BeanDeserializerFactory.addBackReferenceProperties(BeanDeserializerFactory.java:760)
+	at com.fasterxml.jackson.databind.deser.BeanDeserializerFactory.buildBeanDeserializer(BeanDeserializerFactory.java:281)
+	at com.fasterxml.jackson.databind.deser.BeanDeserializerFactory.createBeanDeserializer(BeanDeserializerFactory.java:151)
+	at com.fasterxml.jackson.databind.deser.DeserializerCache._createDeserializer2(DeserializerCache.java:415)
+	at com.fasterxml.jackson.databind.deser.DeserializerCache._createDeserializer(DeserializerCache.java:350)
+	at com.fasterxml.jackson.databind.deser.DeserializerCache._createAndCache2(DeserializerCache.java:264)
+	at com.fasterxml.jackson.databind.deser.DeserializerCache._createAndCacheValueDeserializer(DeserializerCache.java:244)
+	at com.fasterxml.jackson.databind.deser.DeserializerCache.findValueDeserializer(DeserializerCache.java:142)
+	at com.fasterxml.jackson.databind.DeserializationContext.findContextualValueDeserializer(DeserializationContext.java:621)
+	at com.fasterxml.jackson.databind.deser.std.CollectionDeserializer.createContextual(CollectionDeserializer.java:188)
+	at com.fasterxml.jackson.databind.deser.std.CollectionDeserializer.createContextual(CollectionDeserializer.java:28)
+	at com.fasterxml.jackson.databind.DeserializationContext.handleSecondaryContextualization(DeserializationContext.java:867)
+	at com.fasterxml.jackson.databind.DeserializationContext.findRootValueDeserializer(DeserializationContext.java:659)
+	at com.fasterxml.jackson.databind.ObjectReader._findRootDeserializer(ObjectReader.java:2386)
+	at com.fasterxml.jackson.databind.ObjectReader._bindAndClose(ObjectReader.java:2105)
+	at com.fasterxml.jackson.databind.ObjectReader.readValue(ObjectReader.java:1481)
+	at org.springframework.http.converter.json.AbstractJackson2HttpMessageConverter.readJavaType(AbstractJackson2HttpMessageConverter.java:395)
+	... 78 more
 
-com.venturasistemoj.restapi.integrationtests.SpringRestApiTests.getUserPhonesTest  Time elapsed: 0.013 s  <<< ERROR!
+com.venturasistemoj.restapi.integrationtests.SpringRestApiTests.getUserPhonesTest  Time elapsed: 0.014 s  <<< ERROR!
 com.venturasistemoj.restapi.domain.user.IllegalUserStateException: Dados do usu√°rio incompletos ou cpf duplicado!
 	at com.venturasistemoj.restapi.domain.user.UserServiceImpl.createUser(UserServiceImpl.java:45)
 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
@@ -95,7 +115,7 @@ com.venturasistemoj.restapi.domain.user.IllegalUserStateException: Dados do usu√
 	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:343)
 	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:704)
 	at com.venturasistemoj.restapi.domain.user.UserServiceImpl$$SpringCGLIB$$0.createUser(<generated>)
-	at com.venturasistemoj.restapi.integrationtests.SpringRestApiTests.beforeSetUp(SpringRestApiTests.java:107)
+	at com.venturasistemoj.restapi.integrationtests.SpringRestApiTests.beforeSetUp(SpringRestApiTests.java:99)
 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
 	at java.base/java.lang.reflect.Method.invoke(Method.java:578)
 	at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:727)
@@ -178,7 +198,7 @@ com.venturasistemoj.restapi.domain.user.IllegalUserStateException: Dados do usu√
 	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:343)
 	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:704)
 	at com.venturasistemoj.restapi.domain.user.UserServiceImpl$$SpringCGLIB$$0.createUser(<generated>)
-	at com.venturasistemoj.restapi.integrationtests.SpringRestApiTests.beforeSetUp(SpringRestApiTests.java:107)
+	at com.venturasistemoj.restapi.integrationtests.SpringRestApiTests.beforeSetUp(SpringRestApiTests.java:99)
 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
 	at java.base/java.lang.reflect.Method.invoke(Method.java:578)
 	at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:727)
@@ -261,7 +281,7 @@ com.venturasistemoj.restapi.domain.user.IllegalUserStateException: Dados do usu√
 	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:343)
 	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:704)
 	at com.venturasistemoj.restapi.domain.user.UserServiceImpl$$SpringCGLIB$$0.createUser(<generated>)
-	at com.venturasistemoj.restapi.integrationtests.SpringRestApiTests.beforeSetUp(SpringRestApiTests.java:107)
+	at com.venturasistemoj.restapi.integrationtests.SpringRestApiTests.beforeSetUp(SpringRestApiTests.java:99)
 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
 	at java.base/java.lang.reflect.Method.invoke(Method.java:578)
 	at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:727)
@@ -344,7 +364,7 @@ com.venturasistemoj.restapi.domain.user.IllegalUserStateException: Dados do usu√
 	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:343)
 	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:704)
 	at com.venturasistemoj.restapi.domain.user.UserServiceImpl$$SpringCGLIB$$0.createUser(<generated>)
-	at com.venturasistemoj.restapi.integrationtests.SpringRestApiTests.beforeSetUp(SpringRestApiTests.java:107)
+	at com.venturasistemoj.restapi.integrationtests.SpringRestApiTests.beforeSetUp(SpringRestApiTests.java:99)
 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
 	at java.base/java.lang.reflect.Method.invoke(Method.java:578)
 	at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:727)
@@ -427,7 +447,7 @@ com.venturasistemoj.restapi.domain.user.IllegalUserStateException: Dados do usu√
 	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:343)
 	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:704)
 	at com.venturasistemoj.restapi.domain.user.UserServiceImpl$$SpringCGLIB$$0.createUser(<generated>)
-	at com.venturasistemoj.restapi.integrationtests.SpringRestApiTests.beforeSetUp(SpringRestApiTests.java:107)
+	at com.venturasistemoj.restapi.integrationtests.SpringRestApiTests.beforeSetUp(SpringRestApiTests.java:99)
 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
 	at java.base/java.lang.reflect.Method.invoke(Method.java:578)
 	at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:727)
@@ -502,7 +522,7 @@ com.venturasistemoj.restapi.domain.user.IllegalUserStateException: Dados do usu√
 	at org.apache.maven.surefire.booter.ForkedBooter.run(ForkedBooter.java:507)
 	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:495)
 
-com.venturasistemoj.restapi.integrationtests.SpringRestApiTests.getUserAddressTest  Time elapsed: 0.006 s  <<< ERROR!
+com.venturasistemoj.restapi.integrationtests.SpringRestApiTests.getUserAddressTest  Time elapsed: 0.007 s  <<< ERROR!
 com.venturasistemoj.restapi.domain.user.IllegalUserStateException: Dados do usu√°rio incompletos ou cpf duplicado!
 	at com.venturasistemoj.restapi.domain.user.UserServiceImpl.createUser(UserServiceImpl.java:45)
 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
@@ -510,7 +530,7 @@ com.venturasistemoj.restapi.domain.user.IllegalUserStateException: Dados do usu√
 	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:343)
 	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:704)
 	at com.venturasistemoj.restapi.domain.user.UserServiceImpl$$SpringCGLIB$$0.createUser(<generated>)
-	at com.venturasistemoj.restapi.integrationtests.SpringRestApiTests.beforeSetUp(SpringRestApiTests.java:107)
+	at com.venturasistemoj.restapi.integrationtests.SpringRestApiTests.beforeSetUp(SpringRestApiTests.java:99)
 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
 	at java.base/java.lang.reflect.Method.invoke(Method.java:578)
 	at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:727)
@@ -585,7 +605,7 @@ com.venturasistemoj.restapi.domain.user.IllegalUserStateException: Dados do usu√
 	at org.apache.maven.surefire.booter.ForkedBooter.run(ForkedBooter.java:507)
 	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:495)
 
-com.venturasistemoj.restapi.integrationtests.SpringRestApiTests.updatePhoneTest  Time elapsed: 0.008 s  <<< ERROR!
+com.venturasistemoj.restapi.integrationtests.SpringRestApiTests.updatePhoneTest  Time elapsed: 0.006 s  <<< ERROR!
 com.venturasistemoj.restapi.domain.user.IllegalUserStateException: Dados do usu√°rio incompletos ou cpf duplicado!
 	at com.venturasistemoj.restapi.domain.user.UserServiceImpl.createUser(UserServiceImpl.java:45)
 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
@@ -593,7 +613,7 @@ com.venturasistemoj.restapi.domain.user.IllegalUserStateException: Dados do usu√
 	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:343)
 	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:704)
 	at com.venturasistemoj.restapi.domain.user.UserServiceImpl$$SpringCGLIB$$0.createUser(<generated>)
-	at com.venturasistemoj.restapi.integrationtests.SpringRestApiTests.beforeSetUp(SpringRestApiTests.java:107)
+	at com.venturasistemoj.restapi.integrationtests.SpringRestApiTests.beforeSetUp(SpringRestApiTests.java:99)
 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
 	at java.base/java.lang.reflect.Method.invoke(Method.java:578)
 	at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:727)
@@ -676,7 +696,7 @@ com.venturasistemoj.restapi.domain.user.IllegalUserStateException: Dados do usu√
 	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:343)
 	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:704)
 	at com.venturasistemoj.restapi.domain.user.UserServiceImpl$$SpringCGLIB$$0.createUser(<generated>)
-	at com.venturasistemoj.restapi.integrationtests.SpringRestApiTests.beforeSetUp(SpringRestApiTests.java:107)
+	at com.venturasistemoj.restapi.integrationtests.SpringRestApiTests.beforeSetUp(SpringRestApiTests.java:99)
 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
 	at java.base/java.lang.reflect.Method.invoke(Method.java:578)
 	at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:727)
@@ -759,7 +779,7 @@ com.venturasistemoj.restapi.domain.user.IllegalUserStateException: Dados do usu√
 	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:343)
 	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:704)
 	at com.venturasistemoj.restapi.domain.user.UserServiceImpl$$SpringCGLIB$$0.createUser(<generated>)
-	at com.venturasistemoj.restapi.integrationtests.SpringRestApiTests.beforeSetUp(SpringRestApiTests.java:107)
+	at com.venturasistemoj.restapi.integrationtests.SpringRestApiTests.beforeSetUp(SpringRestApiTests.java:99)
 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
 	at java.base/java.lang.reflect.Method.invoke(Method.java:578)
 	at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:727)
@@ -842,7 +862,7 @@ com.venturasistemoj.restapi.domain.user.IllegalUserStateException: Dados do usu√
 	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:343)
 	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:704)
 	at com.venturasistemoj.restapi.domain.user.UserServiceImpl$$SpringCGLIB$$0.createUser(<generated>)
-	at com.venturasistemoj.restapi.integrationtests.SpringRestApiTests.beforeSetUp(SpringRestApiTests.java:107)
+	at com.venturasistemoj.restapi.integrationtests.SpringRestApiTests.beforeSetUp(SpringRestApiTests.java:99)
 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
 	at java.base/java.lang.reflect.Method.invoke(Method.java:578)
 	at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:727)
@@ -917,7 +937,7 @@ com.venturasistemoj.restapi.domain.user.IllegalUserStateException: Dados do usu√
 	at org.apache.maven.surefire.booter.ForkedBooter.run(ForkedBooter.java:507)
 	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:495)
 
-com.venturasistemoj.restapi.integrationtests.SpringRestApiTests.updateAddressTest  Time elapsed: 0.007 s  <<< ERROR!
+com.venturasistemoj.restapi.integrationtests.SpringRestApiTests.updateAddressTest  Time elapsed: 0.006 s  <<< ERROR!
 com.venturasistemoj.restapi.domain.user.IllegalUserStateException: Dados do usu√°rio incompletos ou cpf duplicado!
 	at com.venturasistemoj.restapi.domain.user.UserServiceImpl.createUser(UserServiceImpl.java:45)
 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
@@ -925,7 +945,7 @@ com.venturasistemoj.restapi.domain.user.IllegalUserStateException: Dados do usu√
 	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:343)
 	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:704)
 	at com.venturasistemoj.restapi.domain.user.UserServiceImpl$$SpringCGLIB$$0.createUser(<generated>)
-	at com.venturasistemoj.restapi.integrationtests.SpringRestApiTests.beforeSetUp(SpringRestApiTests.java:107)
+	at com.venturasistemoj.restapi.integrationtests.SpringRestApiTests.beforeSetUp(SpringRestApiTests.java:99)
 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
 	at java.base/java.lang.reflect.Method.invoke(Method.java:578)
 	at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:727)
@@ -1008,7 +1028,7 @@ com.venturasistemoj.restapi.domain.user.IllegalUserStateException: Dados do usu√
 	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:343)
 	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:704)
 	at com.venturasistemoj.restapi.domain.user.UserServiceImpl$$SpringCGLIB$$0.createUser(<generated>)
-	at com.venturasistemoj.restapi.integrationtests.SpringRestApiTests.beforeSetUp(SpringRestApiTests.java:107)
+	at com.venturasistemoj.restapi.integrationtests.SpringRestApiTests.beforeSetUp(SpringRestApiTests.java:99)
 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
 	at java.base/java.lang.reflect.Method.invoke(Method.java:578)
 	at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:727)
@@ -1083,7 +1103,7 @@ com.venturasistemoj.restapi.domain.user.IllegalUserStateException: Dados do usu√
 	at org.apache.maven.surefire.booter.ForkedBooter.run(ForkedBooter.java:507)
 	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:495)
 
-com.venturasistemoj.restapi.integrationtests.SpringRestApiTests.getUserTest  Time elapsed: 0.007 s  <<< ERROR!
+com.venturasistemoj.restapi.integrationtests.SpringRestApiTests.getUserTest  Time elapsed: 0.008 s  <<< ERROR!
 com.venturasistemoj.restapi.domain.user.IllegalUserStateException: Dados do usu√°rio incompletos ou cpf duplicado!
 	at com.venturasistemoj.restapi.domain.user.UserServiceImpl.createUser(UserServiceImpl.java:45)
 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
@@ -1091,7 +1111,7 @@ com.venturasistemoj.restapi.domain.user.IllegalUserStateException: Dados do usu√
 	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:343)
 	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:704)
 	at com.venturasistemoj.restapi.domain.user.UserServiceImpl$$SpringCGLIB$$0.createUser(<generated>)
-	at com.venturasistemoj.restapi.integrationtests.SpringRestApiTests.beforeSetUp(SpringRestApiTests.java:107)
+	at com.venturasistemoj.restapi.integrationtests.SpringRestApiTests.beforeSetUp(SpringRestApiTests.java:99)
 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
 	at java.base/java.lang.reflect.Method.invoke(Method.java:578)
 	at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:727)
@@ -1166,7 +1186,7 @@ com.venturasistemoj.restapi.domain.user.IllegalUserStateException: Dados do usu√
 	at org.apache.maven.surefire.booter.ForkedBooter.run(ForkedBooter.java:507)
 	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:495)
 
-com.venturasistemoj.restapi.integrationtests.SpringRestApiTests.deleteUserTest  Time elapsed: 0.006 s  <<< ERROR!
+com.venturasistemoj.restapi.integrationtests.SpringRestApiTests.deleteUserTest  Time elapsed: 0.007 s  <<< ERROR!
 com.venturasistemoj.restapi.domain.user.IllegalUserStateException: Dados do usu√°rio incompletos ou cpf duplicado!
 	at com.venturasistemoj.restapi.domain.user.UserServiceImpl.createUser(UserServiceImpl.java:45)
 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
@@ -1174,7 +1194,7 @@ com.venturasistemoj.restapi.domain.user.IllegalUserStateException: Dados do usu√
 	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:343)
 	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:704)
 	at com.venturasistemoj.restapi.domain.user.UserServiceImpl$$SpringCGLIB$$0.createUser(<generated>)
-	at com.venturasistemoj.restapi.integrationtests.SpringRestApiTests.beforeSetUp(SpringRestApiTests.java:107)
+	at com.venturasistemoj.restapi.integrationtests.SpringRestApiTests.beforeSetUp(SpringRestApiTests.java:99)
 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
 	at java.base/java.lang.reflect.Method.invoke(Method.java:578)
 	at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:727)

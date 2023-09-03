@@ -7,6 +7,8 @@ import com.venturasistemoj.restapi.domain.user.UserDTO;
 
 import jakarta.validation.constraints.NotNull;
 
+import java.util.Objects;
+
 /**
  * [EN] Phone number data transfer class.
  * [PT] Classe de tranferência de dados de telefone.
@@ -19,7 +21,7 @@ public record PhoneNumberDTO(
 		@NotNull Long phoneId,
 		String type,
 		@NotNull String number,
-		@JsonBackReference @NotNull UserDTO userDTO
+		@NotNull UserDTO userDTO
 ) {
 	public PhoneNumberDTO withUserDTO(UserDTO userDTO) {
 		return new PhoneNumberDTO(phoneId, type, number, userDTO);
@@ -38,5 +40,18 @@ public record PhoneNumberDTO(
 
 	public static PhoneNumberDTO createSamplePhoneNumber() {
 		return new PhoneNumberDTO(1L, "Cel", "(21) 96687-8776", null);
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		PhoneNumberDTO that = (PhoneNumberDTO) o;
+		return Objects.equals(phoneId, that.phoneId) && Objects.equals(type, that.type) && Objects.equals(number, that.number);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(phoneId, type, number);
 	}
 }

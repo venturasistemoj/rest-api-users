@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2023-09-03T16:54:04-0300",
+    date = "2023-09-03T17:49:12-0300",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 20.0.2.1 (Amazon.com Inc.)"
 )
 @Component
@@ -31,6 +31,37 @@ public class PhoneMapperImpl implements PhoneMapper {
         phoneNumber.setNumber( phoneNumberDTO.number() );
 
         return phoneNumber;
+    }
+
+    @Override
+    public PhoneNumber phoneNumberDTOToEntity(PhoneNumberDTO phoneNumberDTO, User user) {
+        if ( phoneNumberDTO == null ) {
+            return null;
+        }
+
+        PhoneNumber phoneNumber = new PhoneNumber();
+
+        phoneNumber.setPhoneId( phoneNumberDTO.phoneId() );
+        phoneNumber.setType( phoneNumberDTO.type() );
+        phoneNumber.setNumber( phoneNumberDTO.number() );
+
+        setPhoneNumberUser( phoneNumber, user );
+
+        return phoneNumber;
+    }
+
+    @Override
+    public Set<PhoneNumber> phoneNumbersDTOToPhoneNumbers(Set<PhoneNumberDTO> phones) {
+        if ( phones == null ) {
+            return null;
+        }
+
+        Set<PhoneNumber> set = new LinkedHashSet<PhoneNumber>( Math.max( (int) ( phones.size() / .75f ) + 1, 16 ) );
+        for ( PhoneNumberDTO phoneNumberDTO : phones ) {
+            set.add( phoneNumberDTOToPhoneNumber( phoneNumberDTO ) );
+        }
+
+        return set;
     }
 
     @Override
@@ -55,28 +86,14 @@ public class PhoneMapperImpl implements PhoneMapper {
     }
 
     @Override
-    public Set<PhoneNumber> phoneNumbersDTOToPhoneNumbers(Set<PhoneNumberDTO> phones) {
-        if ( phones == null ) {
+    public Set<PhoneNumberDTO> phoneNumbersToPhoneNumbersDTO(Set<PhoneNumber> phoneNumbers) {
+        if ( phoneNumbers == null ) {
             return null;
         }
 
-        Set<PhoneNumber> set = new LinkedHashSet<PhoneNumber>( Math.max( (int) ( phones.size() / .75f ) + 1, 16 ) );
-        for ( PhoneNumberDTO phoneNumberDTO : phones ) {
-            set.add( phoneNumberDTOToPhoneNumber( phoneNumberDTO ) );
-        }
-
-        return set;
-    }
-
-    @Override
-    public Set<PhoneNumberDTO> phoneNumbersToPhoneNumbersDTO(Set<PhoneNumber> phones) {
-        if ( phones == null ) {
-            return null;
-        }
-
-        Set<PhoneNumberDTO> set = new LinkedHashSet<PhoneNumberDTO>( Math.max( (int) ( phones.size() / .75f ) + 1, 16 ) );
-        for ( PhoneNumber phoneNumber : phones ) {
-            set.add( phoneNumberToPhoneNumberDTO1( phoneNumber ) );
+        Set<PhoneNumberDTO> set = new LinkedHashSet<PhoneNumberDTO>( Math.max( (int) ( phoneNumbers.size() / .75f ) + 1, 16 ) );
+        for ( PhoneNumber phoneNumber : phoneNumbers ) {
+            set.add( phoneNumberToPhoneNumberDTO( phoneNumber ) );
         }
 
         return set;
@@ -124,25 +141,5 @@ public class PhoneMapperImpl implements PhoneMapper {
         UserDTO userDTO = new UserDTO( userId, name, surName, birthDate, cpf, email, addressDTO, phonesDTO );
 
         return userDTO;
-    }
-
-    protected PhoneNumberDTO phoneNumberToPhoneNumberDTO1(PhoneNumber phoneNumber) {
-        if ( phoneNumber == null ) {
-            return null;
-        }
-
-        Long phoneId = null;
-        String type = null;
-        String number = null;
-
-        phoneId = phoneNumber.getPhoneId();
-        type = phoneNumber.getType();
-        number = phoneNumber.getNumber();
-
-        UserDTO userDTO = null;
-
-        PhoneNumberDTO phoneNumberDTO = new PhoneNumberDTO( phoneId, type, number, userDTO );
-
-        return phoneNumberDTO;
     }
 }

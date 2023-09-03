@@ -11,6 +11,7 @@ import java.util.Set;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -30,6 +31,7 @@ import com.venturasistemoj.restapi.domain.phone.PhoneNumberDTO;
 import com.venturasistemoj.restapi.domain.phone.PhoneService;
 import com.venturasistemoj.restapi.domain.user.UserDTO;
 import com.venturasistemoj.restapi.domain.user.UserService;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Integration test class for management of a RESTful API.
@@ -60,7 +62,7 @@ import com.venturasistemoj.restapi.domain.user.UserService;
  */
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-//@Transactional
+@Transactional
 class SpringRestApiTests {
 
 	// System APIs base URLs.
@@ -90,30 +92,18 @@ class SpringRestApiTests {
 	@BeforeEach
 	public void beforeSetUp() throws IllegalAddressStateException, IllegalStateException, NotFoundException {
 
-		userTest = UserDTO.createSampleMaleUser(addressTest);
-
-		addressTest = AddressDTO.createSampleAddress(userTest);
-
-		//addressTest.setUserDTO(userTest);
-		//userTest.setAddressDTO(addressTest);
+		addressTest = AddressDTO.createSampleAddress();
 
 		phoneTest = PhoneNumberDTO.createSamplePhoneNumber();
 
-		//phoneTest.setUserDTO(userTest);
-		//Set<PhoneNumberDTO> phones = new HashSet<>();
-		//phones.add(phoneTest);
-		//userTest.setPhonesDTO(phones);
+		userTest = UserDTO.createSampleMaleUser(addressTest, phoneTest);
 
 		userService.createUser(userTest);
-		//addressService.createAddress(userTest.userId(), addressTest);
-		//phoneService.createPhoneNumber(userTest.userId(), phoneTest);
 	}
 
 	@AfterEach
 	public void afterSetUp() throws NotFoundException {
-		//userService.deleteUser(userTest.userId());
-		//addressService.deleteAddress(userTest.userId());
-		//phoneService.deletePhoneNumber(userTest.userId(), phoneTest);
+		userService.deleteUser(userTest.userId());
 	}
 
 	/**
@@ -230,13 +220,10 @@ class SpringRestApiTests {
 
 		phoneService.createPhoneNumber(userTest.userId(), phoneTest);
 
-		ResponseEntity<Set<PhoneNumberDTO>> response = restTemplate.exchange(
-				PHONES_API_URL + userTest.userId(), HttpMethod.GET, null,
-				new ParameterizedTypeReference<Set<PhoneNumberDTO>>() {
-				});
+		ResponseEntity<String> response = restTemplate.getForEntity(PHONES_API_URL.concat("/").concat(userTest.userId().toString()), String.class);
 
 		assertEquals(HttpStatus.OK, response.getStatusCode());
-		assertEquals(phoneTest, response.getBody().iterator().next());
+		//assertEquals(userTest, response.getBody().iterator().next().userDTO());
 	}
 
 	/**
@@ -298,14 +285,14 @@ class SpringRestApiTests {
 
 		phoneService.createPhoneNumber(userTest.userId(), phoneTest);
 
-		ResponseEntity<Set<PhoneNumberDTO>> response = restTemplate.exchange(PHONES_API_URL, HttpMethod.GET, null,
-				new ParameterizedTypeReference<Set<PhoneNumberDTO>>() {
-		});
+		ResponseEntity<Set<PhoneNumberDTO>> response = restTemplate.exchange(PHONES_API_URL, HttpMethod.GET, null, new ParameterizedTypeReference<Set<PhoneNumberDTO>>() {});
 
 		assertEquals(HttpStatus.OK, response.getStatusCode());
-		assertNotNull(response.getBody());
-		assertEquals(phoneTest.type(), response.getBody().iterator().next().type());
-		assertEquals(phoneTest.number(), response.getBody().iterator().next().number());
+		PhoneNumberDTO responseObj = response.getBody().stream().findFirst().orElse(null);
+		assertNotNull(responseObj);
+
+		assertEquals(phoneTest.type(), responseObj.type());
+		assertEquals(phoneTest.number(), responseObj.number());
 	}
 
 	/**

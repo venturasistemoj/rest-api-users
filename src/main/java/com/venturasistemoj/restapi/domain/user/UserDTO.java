@@ -70,4 +70,8 @@ public record UserDTO(
 	public static UserDTO createSampleMaleUser(AddressDTO addressDTO){
 		return new UserDTO(1L, "Luiz Inacio", "da Silva", LocalDate.of(1972, Month.FEBRUARY, 22), "123.456.789-10", "lula@prov.com", addressDTO, null);
 	}
+
+	public static UserDTO createSampleMaleUser(AddressDTO addressDTO, PhoneNumberDTO phoneNumberDTO){
+		return new UserDTO(1L, "Luiz Inacio", "da Silva", LocalDate.of(1972, Month.FEBRUARY, 22), "123.456.789-10", "lula@prov.com", addressDTO, Set.of(phoneNumberDTO));
+	}
 }

@@ -8,15 +8,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.venturasistemoj.restapi.domain.address.Address;
 import com.venturasistemoj.restapi.domain.phone.PhoneNumber;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
@@ -79,7 +71,7 @@ public class User {
 	 * <code>cascade</code> define que as operações de persistência realizadas na entidade <code>User</code> serão
 	 * propagadas para a entidade <code>Address/<code>.
 	 */
-	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL,orphanRemoval = true)
 	@JsonManagedReference
 	private Address address;
 
@@ -89,7 +81,7 @@ public class User {
 	 * <code>user</code> (dona da relação) na classe <code>PhoneNumber</code>, isso significa que a tabela phones
 	 * possui uma coluna <code>user_id</code> que faz referência à chave primária da tabela users.
 	 */
-	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL,fetch = FetchType.EAGER,orphanRemoval = true)
 	@JsonManagedReference
 	private Set<PhoneNumber> phones;
 

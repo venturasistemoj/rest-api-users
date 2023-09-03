@@ -51,7 +51,7 @@ public class PhoneServiceImpl implements PhoneService {
     public PhoneNumberDTO createPhoneNumber(@NotNull Long userId, @Valid PhoneNumberDTO phoneDTO)
             throws NotFoundException, IllegalStateException, IllegalPhoneStateException {
 
-        User existingUser = checkUser(userId); // RN5
+        User existingUser = getUser(userId);
 
         if (!phoneDTO.isValid())
             throw new IllegalPhoneStateException(INCONPLETE_PHONE_DATA);
@@ -62,10 +62,9 @@ public class PhoneServiceImpl implements PhoneService {
         //if (existingUser.getPhones().contains(phoneMapper.phoneNumberDTOToPhoneNumber(phoneDTO)))
         //throw new IllegalStateException("Número de telefone duplicado!");
 
-        phoneDTO = phoneDTO.withUserDTO(userMapper.userToUserDTO(existingUser)); // Associate user with the phone
-
-        PhoneNumber savedPhoneNumber = phoneRepository.save(phoneMapper.phoneNumberDTOToPhoneNumber(phoneDTO));
-        return phoneMapper.phoneNumberToPhoneNumberDTO(savedPhoneNumber);
+        PhoneNumber phoneNumber = phoneMapper.phoneNumberDTOToEntity(phoneDTO, existingUser);
+        PhoneNumber savedNumber = phoneRepository.save(phoneNumber);
+        return phoneMapper.phoneNumberToPhoneNumberDTO(savedNumber);
     }
 
     /**
@@ -82,7 +81,7 @@ public class PhoneServiceImpl implements PhoneService {
         if (!phoneDTO.isValid())
             throw new IllegalPhoneStateException(INCONPLETE_PHONE_DATA);
 
-        User existingUser = checkUser(userId);
+        User existingUser = getUser(userId);
         Set<PhoneNumber> userPhones = phoneRepository.findAllByUser(existingUser);
 
         if (userPhones.isEmpty())
@@ -109,7 +108,7 @@ public class PhoneServiceImpl implements PhoneService {
     @Transactional(readOnly = true)
     public Set<PhoneNumberDTO> getPhonesByUserId(@NotNull Long userId) throws NotFoundException {
 
-        User existingUser = checkUser(userId);
+        User existingUser = getUser(userId);
 
         if (!existingUser.getPhones().isEmpty())
             return phoneRepository.findAllByUser(existingUser)
@@ -150,7 +149,7 @@ public class PhoneServiceImpl implements PhoneService {
 
         PhoneNumber existingPhone = phoneRepository.findById(phoneDTO.phoneId()).orElseThrow(NotFoundException::new);
 
-        User existingUser = checkUser(userId);
+        User existingUser = getUser(userId);
 
         if (!phoneDTO.isValid())
             throw new IllegalPhoneStateException(INCONPLETE_PHONE_DATA);
@@ -162,7 +161,7 @@ public class PhoneServiceImpl implements PhoneService {
 
     // Verifica existência de usuário para associar telefone.
     @Transactional(readOnly = true)
-    protected User checkUser(Long userId) throws NotFoundException {
+    protected User getUser(Long userId) throws NotFoundException {
 
         Optional<User> optionalUser = userRepository.findById(userId);
 
