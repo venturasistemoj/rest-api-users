@@ -90,33 +90,14 @@ class SpringRestApiTests {
 	@BeforeEach
 	public void beforeSetUp() throws IllegalAddressStateException, IllegalStateException, NotFoundException {
 
-		userTest = UserDTO.builder()
-				.userId(1L)
-				.name("Luiz Inacio")
-				.surName("da Silva")
-				.birthDate(LocalDate.of(1972, Month.FEBRUARY, 22))
-				.cpf("123.456.789-10")
-				.email("lula@prov.com")
-				.build();
+		userTest = UserDTO.createSampleMaleUser(addressTest);
 
-		addressTest = AddressDTO.builder()
-				.addressId(1L)
-				.publicPlace("Avenida")
-				.streetAddress("Glasshouse, 69")
-				.complement("1001")
-				.city("Rio 40º")
-				.state("RJ")
-				.zipCode("69.069-069")
-				.build();
+		addressTest = AddressDTO.createSampleAddress(userTest);
 
 		//addressTest.setUserDTO(userTest);
 		//userTest.setAddressDTO(addressTest);
 
-		phoneTest = PhoneNumberDTO.builder()
-				.phoneId(1L)
-				.type("Cel")
-				.number("(21) 96687-8776")
-				.build();
+		phoneTest = PhoneNumberDTO.createSamplePhoneNumber();
 
 		//phoneTest.setUserDTO(userTest);
 		//Set<PhoneNumberDTO> phones = new HashSet<>();
@@ -124,15 +105,15 @@ class SpringRestApiTests {
 		//userTest.setPhonesDTO(phones);
 
 		userService.createUser(userTest);
-		//addressService.createAddress(userTest.getUserId(), addressTest);
-		//phoneService.createPhoneNumber(userTest.getUserId(), phoneTest);
+		//addressService.createAddress(userTest.userId(), addressTest);
+		//phoneService.createPhoneNumber(userTest.userId(), phoneTest);
 	}
 
 	@AfterEach
 	public void afterSetUp() throws NotFoundException {
-		//userService.deleteUser(userTest.getUserId());
-		//addressService.deleteAddress(userTest.getUserId());
-		//phoneService.deletePhoneNumber(userTest.getUserId(), phoneTest);
+		//userService.deleteUser(userTest.userId());
+		//addressService.deleteAddress(userTest.userId());
+		//phoneService.deletePhoneNumber(userTest.userId(), phoneTest);
 	}
 
 	/**
@@ -157,13 +138,13 @@ class SpringRestApiTests {
 	@Test
 	public void createUserTest() throws NotFoundException {
 
-		userService.deleteUser(userTest.getUserId());
+		userService.deleteUser(userTest.userId());
 
 		ResponseEntity<UserDTO> response = restTemplate.postForEntity(
 				USERS_API_URL, userTest, UserDTO.class);
 
 		assertEquals(HttpStatus.CREATED, response.getStatusCode());
-		assertNotNull(response.getBody().getUserId());
+		assertNotNull(response.getBody().userId());
 		assertUser(response);
 	}
 
@@ -175,13 +156,13 @@ class SpringRestApiTests {
 	@Test
 	public void createAddressTest() throws NotFoundException {
 
-		//addressService.deleteAddress(userTest.getUserId());
+		//addressService.deleteAddress(userTest.userId());
 
 		ResponseEntity<AddressDTO> response = restTemplate.postForEntity(
-				ADRESSES_API_URL + userTest.getUserId(), addressTest, AddressDTO.class);
+				ADRESSES_API_URL + userTest.userId(), addressTest, AddressDTO.class);
 
 		assertEquals(HttpStatus.CREATED, response.getStatusCode());
-		assertNotNull(response.getBody().getAddressId());
+		assertNotNull(response.getBody().addressId());
 		assertAddress(response);
 	}
 
@@ -194,13 +175,13 @@ class SpringRestApiTests {
 	@Test
 	public void createPhoneTest() throws IllegalPhoneStateException, NotFoundException {
 
-		//phoneService.deletePhoneNumber(userTest.getUserId(), phoneTest);
+		//phoneService.deletePhoneNumber(userTest.userId(), phoneTest);
 
 		ResponseEntity<PhoneNumberDTO> response = restTemplate.postForEntity(
-				PHONES_API_URL + userTest.getUserId(), phoneTest, PhoneNumberDTO.class);
+				PHONES_API_URL + userTest.userId(), phoneTest, PhoneNumberDTO.class);
 
 		assertEquals(HttpStatus.CREATED, response.getStatusCode());
-		assertNotNull(response.getBody().getPhoneId());
+		assertNotNull(response.getBody().phoneId());
 		assertPhone(response);
 	}
 
@@ -212,7 +193,7 @@ class SpringRestApiTests {
 	public void getUserTest() {
 
 		ResponseEntity<UserDTO> response = restTemplate.getForEntity(
-				USERS_API_URL + userTest.getUserId(), UserDTO.class);
+				USERS_API_URL + userTest.userId(), UserDTO.class);
 
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 		assertUser(response);
@@ -228,10 +209,10 @@ class SpringRestApiTests {
 	@Test
 	public void getUserAddressTest() throws IllegalAddressStateException, IllegalStateException, NotFoundException {
 
-		addressService.createAddress(userTest.getUserId(), addressTest);
+		addressService.createAddress(userTest.userId(), addressTest);
 
 		ResponseEntity<AddressDTO> response = restTemplate.getForEntity(
-				ADRESSES_API_URL + userTest.getUserId(), AddressDTO.class);
+				ADRESSES_API_URL + userTest.userId(), AddressDTO.class);
 
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 		assertAddress(response);
@@ -247,10 +228,10 @@ class SpringRestApiTests {
 	@Test
 	public void getUserPhonesTest() throws IllegalStateException, IllegalPhoneStateException, NotFoundException {
 
-		phoneService.createPhoneNumber(userTest.getUserId(), phoneTest);
+		phoneService.createPhoneNumber(userTest.userId(), phoneTest);
 
 		ResponseEntity<Set<PhoneNumberDTO>> response = restTemplate.exchange(
-				PHONES_API_URL + userTest.getUserId(), HttpMethod.GET, null,
+				PHONES_API_URL + userTest.userId(), HttpMethod.GET, null,
 				new ParameterizedTypeReference<Set<PhoneNumberDTO>>() {
 				});
 
@@ -271,11 +252,11 @@ class SpringRestApiTests {
 
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 		assertNotNull(response.getBody());
-		assertEquals(userTest.getUserId(), response.getBody().get(0).getUserId());
-		assertEquals(userTest.getName(), response.getBody().get(0).getName());
-		assertEquals(userTest.getEmail(), response.getBody().get(0).getEmail());
-		assertEquals(userTest.getCpf(), response.getBody().get(0).getCpf());
-		assertEquals(userTest.getBirthDate(), response.getBody().get(0).getBirthDate());
+		assertEquals(userTest.userId(), response.getBody().get(0).userId());
+		assertEquals(userTest.name(), response.getBody().get(0).name());
+		assertEquals(userTest.email(), response.getBody().get(0).email());
+		assertEquals(userTest.cpf(), response.getBody().get(0).cpf());
+		assertEquals(userTest.birthDate(), response.getBody().get(0).birthDate());
 	}
 
 	/**
@@ -288,7 +269,7 @@ class SpringRestApiTests {
 	@Test
 	public void getAdressesTest() throws IllegalAddressStateException, IllegalStateException, NotFoundException {
 
-		addressService.createAddress(userTest.getUserId(), addressTest);
+		addressService.createAddress(userTest.userId(), addressTest);
 
 		ResponseEntity<List<AddressDTO>> response = restTemplate.exchange(ADRESSES_API_URL, HttpMethod.GET, null,
 				new ParameterizedTypeReference<List<AddressDTO>>() {
@@ -296,13 +277,13 @@ class SpringRestApiTests {
 
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 		assertNotNull(response.getBody());
-		assertEquals(addressTest.getAddressId(), response.getBody().get(0).getAddressId());
-		assertEquals(addressTest.getPublicPlace(), response.getBody().get(0).getPublicPlace());
-		assertEquals(addressTest.getStreetAddress(), response.getBody().get(0).getStreetAddress());
-		assertEquals(addressTest.getComplement(), response.getBody().get(0).getComplement());
-		assertEquals(addressTest.getCity(), response.getBody().get(0).getCity());
-		assertEquals(addressTest.getState(), response.getBody().get(0).getState());
-		assertEquals(addressTest.getZipCode(), response.getBody().get(0).getZipCode());
+		assertEquals(addressTest.addressId(), response.getBody().get(0).addressId());
+		assertEquals(addressTest.publicPlace(), response.getBody().get(0).publicPlace());
+		assertEquals(addressTest.streetAddress(), response.getBody().get(0).streetAddress());
+		assertEquals(addressTest.complement(), response.getBody().get(0).complement());
+		assertEquals(addressTest.city(), response.getBody().get(0).city());
+		assertEquals(addressTest.state(), response.getBody().get(0).state());
+		assertEquals(addressTest.zipCode(), response.getBody().get(0).zipCode());
 	}
 
 	/**
@@ -315,7 +296,7 @@ class SpringRestApiTests {
 	@Test
 	public void getPhonesTest() throws IllegalStateException, IllegalPhoneStateException, NotFoundException {
 
-		phoneService.createPhoneNumber(userTest.getUserId(), phoneTest);
+		phoneService.createPhoneNumber(userTest.userId(), phoneTest);
 
 		ResponseEntity<Set<PhoneNumberDTO>> response = restTemplate.exchange(PHONES_API_URL, HttpMethod.GET, null,
 				new ParameterizedTypeReference<Set<PhoneNumberDTO>>() {
@@ -323,8 +304,8 @@ class SpringRestApiTests {
 
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 		assertNotNull(response.getBody());
-		assertEquals(phoneTest.getType(), response.getBody().iterator().next().getType());
-		assertEquals(phoneTest.getNumber(), response.getBody().iterator().next().getNumber());
+		assertEquals(phoneTest.type(), response.getBody().iterator().next().type());
+		assertEquals(phoneTest.number(), response.getBody().iterator().next().number());
 	}
 
 	/**
@@ -335,26 +316,20 @@ class SpringRestApiTests {
 	@Test
 	public void updateUserTest() {
 
-		UserDTO updatedUser = UserDTO.builder()
-				.name("Dilma")
-				.surName("Rousseff")
-				.birthDate(LocalDate.of(1956, Month.OCTOBER, 26))
-				.cpf("789.456.123-10")
-				.email("dilmae@prov.com")
-				.build();
+		UserDTO updatedUser = UserDTO.createSampleUser();
 
 		HttpEntity<UserDTO> requestUpdate = new HttpEntity<>(updatedUser);
 
 		ResponseEntity<UserDTO> response = restTemplate.exchange(
-				USERS_API_URL + userTest.getUserId(), HttpMethod.PUT, requestUpdate, UserDTO.class);
+				USERS_API_URL + userTest.userId(), HttpMethod.PUT, requestUpdate, UserDTO.class);
 
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 		assertNotNull(response.getBody());
-		assertEquals(updatedUser.getUserId(), response.getBody().getUserId());
-		assertEquals(updatedUser.getName(), response.getBody().getName());
-		assertEquals(updatedUser.getEmail(), response.getBody().getEmail());
-		assertEquals(updatedUser.getCpf(), response.getBody().getCpf());
-		assertEquals(updatedUser.getBirthDate(), response.getBody().getBirthDate());
+		assertEquals(updatedUser.userId(), response.getBody().userId());
+		assertEquals(updatedUser.name(), response.getBody().name());
+		assertEquals(updatedUser.email(), response.getBody().email());
+		assertEquals(updatedUser.cpf(), response.getBody().cpf());
+		assertEquals(updatedUser.birthDate(), response.getBody().birthDate());
 	}
 
 	/**
@@ -368,31 +343,25 @@ class SpringRestApiTests {
 	@Test
 	public void updateAddressTest() throws IllegalAddressStateException, IllegalStateException, NotFoundException {
 
-		addressService.createAddress(userTest.getUserId(), addressTest);
+		addressService.createAddress(userTest.userId(), addressTest);
 
-		AddressDTO updatedAddress = AddressDTO.builder()
-				.publicPlace("Rua")
-				.streetAddress("Conde Deu, 69")
-				.complement("801")
-				.city("Salvador")
-				.state("BA")
-				.zipCode("69.069-069")
-				.build();
+		AddressDTO updatedAddress = new AddressDTO(null, "Rua", "Conde Dev, 69",
+				"801", "Salvador", "BA", "69.069-069", null);
 
 		HttpEntity<AddressDTO> requestUpdate = new HttpEntity<>(updatedAddress);
 
 		ResponseEntity<AddressDTO> response = restTemplate.exchange(
-				ADRESSES_API_URL + userTest.getUserId(), HttpMethod.PUT, requestUpdate, AddressDTO.class);
+				ADRESSES_API_URL + userTest.userId(), HttpMethod.PUT, requestUpdate, AddressDTO.class);
 
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 		assertNotNull(response.getBody());
-		assertEquals(updatedAddress.getAddressId(), response.getBody().getAddressId());
-		assertEquals(updatedAddress.getPublicPlace(), response.getBody().getPublicPlace());
-		assertEquals(updatedAddress.getStreetAddress(), response.getBody().getStreetAddress());
-		assertEquals(updatedAddress.getComplement(), response.getBody().getComplement());
-		assertEquals(updatedAddress.getCity(), response.getBody().getCity());
-		assertEquals(updatedAddress.getState(), response.getBody().getState());
-		assertEquals(updatedAddress.getZipCode(), response.getBody().getZipCode());
+		assertEquals(updatedAddress.addressId(), response.getBody().addressId());
+		assertEquals(updatedAddress.publicPlace(), response.getBody().publicPlace());
+		assertEquals(updatedAddress.streetAddress(), response.getBody().streetAddress());
+		assertEquals(updatedAddress.complement(), response.getBody().complement());
+		assertEquals(updatedAddress.city(), response.getBody().city());
+		assertEquals(updatedAddress.state(), response.getBody().state());
+		assertEquals(updatedAddress.zipCode(), response.getBody().zipCode());
 	}
 
 	/**
@@ -406,22 +375,19 @@ class SpringRestApiTests {
 	@Test
 	public void updatePhoneTest() throws IllegalStateException, IllegalPhoneStateException, NotFoundException {
 
-		phoneService.createPhoneNumber(userTest.getUserId(), phoneTest);
+		phoneService.createPhoneNumber(userTest.userId(), phoneTest);
 
-		PhoneNumberDTO updatedPhone = PhoneNumberDTO.builder()
-				.type("Moblie")
-				.number("(21) 96387-1788")
-				.build();
+		PhoneNumberDTO updatedPhone = new PhoneNumberDTO(null, "Moblie", "(21) 96387-1788", null);
 
 		HttpEntity<PhoneNumberDTO> requestUpdate = new HttpEntity<>(updatedPhone);
 
 		ResponseEntity<PhoneNumberDTO> response = restTemplate.exchange(
-				PHONES_API_URL + userTest.getUserId(), HttpMethod.PUT, requestUpdate, PhoneNumberDTO.class);
+				PHONES_API_URL + userTest.userId(), HttpMethod.PUT, requestUpdate, PhoneNumberDTO.class);
 
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 		assertNotNull(response.getBody());
-		assertEquals(updatedPhone.getType(), response.getBody().getType());
-		assertEquals(updatedPhone.getNumber(), response.getBody().getNumber());
+		assertEquals(updatedPhone.type(), response.getBody().type());
+		assertEquals(updatedPhone.number(), response.getBody().number());
 	}
 
 	/**
@@ -433,7 +399,7 @@ class SpringRestApiTests {
 	public void deleteUserTest() {
 
 		ResponseEntity<Void> response = restTemplate.exchange(
-				USERS_API_URL + userTest.getUserId(), HttpMethod.DELETE, null, Void.class);
+				USERS_API_URL + userTest.userId(), HttpMethod.DELETE, null, Void.class);
 
 		assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
 	}
@@ -447,10 +413,10 @@ class SpringRestApiTests {
 	@Test
 	public void deleteAddressTest() throws IllegalAddressStateException, IllegalStateException, NotFoundException {
 
-		addressService.createAddress(userTest.getUserId(), addressTest);
+		addressService.createAddress(userTest.userId(), addressTest);
 
 		ResponseEntity<Void> response = restTemplate.exchange(
-				ADRESSES_API_URL + userTest.getUserId(), HttpMethod.DELETE, null, Void.class);
+				ADRESSES_API_URL + userTest.userId(), HttpMethod.DELETE, null, Void.class);
 
 		assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
 	}
@@ -464,36 +430,36 @@ class SpringRestApiTests {
 	@Test
 	public void deletePhoneTest() throws IllegalStateException, IllegalPhoneStateException, NotFoundException {
 
-		phoneService.createPhoneNumber(userTest.getUserId(), phoneTest);
+		phoneService.createPhoneNumber(userTest.userId(), phoneTest);
 
 		ResponseEntity<Void> response = restTemplate.exchange(
-				PHONES_API_URL + userTest.getUserId(), HttpMethod.DELETE, null, Void.class);
+				PHONES_API_URL + userTest.userId(), HttpMethod.DELETE, null, Void.class);
 
 		assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
 	}
 
 	// helper method for user assertions
 	private void assertUser(ResponseEntity<UserDTO> userResponse) {
-		assertEquals(userTest.getName(), userResponse.getBody().getName());
-		assertEquals(userTest.getEmail(), userResponse.getBody().getEmail());
-		assertEquals(userTest.getCpf(), userResponse.getBody().getCpf());
-		assertEquals(userTest.getBirthDate(), userResponse.getBody().getBirthDate());
+		assertEquals(userTest.name(), userResponse.getBody().name());
+		assertEquals(userTest.email(), userResponse.getBody().email());
+		assertEquals(userTest.cpf(), userResponse.getBody().cpf());
+		assertEquals(userTest.birthDate(), userResponse.getBody().birthDate());
 	}
 
 	// helper method for address assertions
 	private void assertAddress(ResponseEntity<AddressDTO> addressResponse) {
-		assertEquals(addressTest.getPublicPlace(), addressResponse.getBody().getPublicPlace());
-		assertEquals(addressTest.getStreetAddress(), addressResponse.getBody().getStreetAddress());
-		assertEquals(addressTest.getComplement(), addressResponse.getBody().getComplement());
-		assertEquals(addressTest.getCity(), addressResponse.getBody().getCity());
-		assertEquals(addressTest.getState(), addressResponse.getBody().getState());
-		assertEquals(addressTest.getZipCode(), addressResponse.getBody().getZipCode());
+		assertEquals(addressTest.publicPlace(), addressResponse.getBody().publicPlace());
+		assertEquals(addressTest.streetAddress(), addressResponse.getBody().streetAddress());
+		assertEquals(addressTest.complement(), addressResponse.getBody().complement());
+		assertEquals(addressTest.city(), addressResponse.getBody().city());
+		assertEquals(addressTest.state(), addressResponse.getBody().state());
+		assertEquals(addressTest.zipCode(), addressResponse.getBody().zipCode());
 	}
 
 	// helper method for phone assertions
 	private void assertPhone(ResponseEntity<PhoneNumberDTO> phoneResponse) {
-		assertEquals(phoneTest.getType(), phoneResponse.getBody().getType());
-		assertEquals(phoneTest.getNumber(), phoneResponse.getBody().getNumber());
+		assertEquals(phoneTest.type(), phoneResponse.getBody().type());
+		assertEquals(phoneTest.number(), phoneResponse.getBody().number());
 	}
 
 }

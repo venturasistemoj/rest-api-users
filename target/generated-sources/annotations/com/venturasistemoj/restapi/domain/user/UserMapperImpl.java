@@ -1,17 +1,21 @@
 package com.venturasistemoj.restapi.domain.user;
 
+import com.venturasistemoj.restapi.domain.address.AddressDTO;
 import com.venturasistemoj.restapi.domain.address.AddressMapper;
 import com.venturasistemoj.restapi.domain.phone.PhoneMapper;
+import com.venturasistemoj.restapi.domain.phone.PhoneNumberDTO;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import javax.annotation.processing.Generated;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2023-08-21T19:02:42-0300",
-    comments = "version: 1.5.5.Final, compiler: Eclipse JDT (IDE) 3.33.0.v20230218-1114, environment: Java 17.0.5 (Oracle Corporation)"
+    date = "2023-09-03T16:54:04-0300",
+    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 20.0.2.1 (Amazon.com Inc.)"
 )
 @Component
 public class UserMapperImpl implements UserMapper {
@@ -29,14 +33,14 @@ public class UserMapperImpl implements UserMapper {
 
         User user = new User();
 
-        user.setAddress( addressMapper.addressDTOToAddress( userDTO.getAddressDTO() ) );
-        user.setPhones( phoneMapper.phoneNumbersDTOToPhoneNumbers( userDTO.getPhonesDTO() ) );
-        user.setBirthDate( userDTO.getBirthDate() );
-        user.setCpf( userDTO.getCpf() );
-        user.setEmail( userDTO.getEmail() );
-        user.setName( userDTO.getName() );
-        user.setSurName( userDTO.getSurName() );
-        user.setUserId( userDTO.getUserId() );
+        user.setAddress( addressMapper.addressDTOToAddress( userDTO.addressDTO() ) );
+        user.setPhones( phoneMapper.phoneNumbersDTOToPhoneNumbers( userDTO.phonesDTO() ) );
+        user.setUserId( userDTO.userId() );
+        user.setName( userDTO.name() );
+        user.setSurName( userDTO.surName() );
+        user.setBirthDate( userDTO.birthDate() );
+        user.setCpf( userDTO.cpf() );
+        user.setEmail( userDTO.email() );
 
         return user;
     }
@@ -47,18 +51,27 @@ public class UserMapperImpl implements UserMapper {
             return null;
         }
 
-        UserDTO.UserDTOBuilder userDTO = UserDTO.builder();
+        AddressDTO addressDTO = null;
+        Set<PhoneNumberDTO> phonesDTO = null;
+        Long userId = null;
+        String name = null;
+        String surName = null;
+        LocalDate birthDate = null;
+        String cpf = null;
+        String email = null;
 
-        userDTO.addressDTO( addressMapper.addressToAddressDTO( user.getAddress() ) );
-        userDTO.phonesDTO( phoneMapper.phoneNumbersToPhoneNumbersDTO( user.getPhones() ) );
-        userDTO.birthDate( user.getBirthDate() );
-        userDTO.cpf( user.getCpf() );
-        userDTO.email( user.getEmail() );
-        userDTO.name( user.getName() );
-        userDTO.surName( user.getSurName() );
-        userDTO.userId( user.getUserId() );
+        addressDTO = addressMapper.addressToAddressDTO( user.getAddress() );
+        phonesDTO = phoneMapper.phoneNumbersToPhoneNumbersDTO( user.getPhones() );
+        userId = user.getUserId();
+        name = user.getName();
+        surName = user.getSurName();
+        birthDate = user.getBirthDate();
+        cpf = user.getCpf();
+        email = user.getEmail();
 
-        return userDTO.build();
+        UserDTO userDTO = new UserDTO( userId, name, surName, birthDate, cpf, email, addressDTO, phonesDTO );
+
+        return userDTO;
     }
 
     @Override
@@ -94,15 +107,25 @@ public class UserMapperImpl implements UserMapper {
             return null;
         }
 
-        UserDTO.UserDTOBuilder userDTO = UserDTO.builder();
+        Long userId = null;
+        String name = null;
+        String surName = null;
+        LocalDate birthDate = null;
+        String cpf = null;
+        String email = null;
 
-        userDTO.birthDate( user.getBirthDate() );
-        userDTO.cpf( user.getCpf() );
-        userDTO.email( user.getEmail() );
-        userDTO.name( user.getName() );
-        userDTO.surName( user.getSurName() );
-        userDTO.userId( user.getUserId() );
+        userId = user.getUserId();
+        name = user.getName();
+        surName = user.getSurName();
+        birthDate = user.getBirthDate();
+        cpf = user.getCpf();
+        email = user.getEmail();
 
-        return userDTO.build();
+        AddressDTO addressDTO = null;
+        Set<PhoneNumberDTO> phonesDTO = null;
+
+        UserDTO userDTO = new UserDTO( userId, name, surName, birthDate, cpf, email, addressDTO, phonesDTO );
+
+        return userDTO;
     }
 }

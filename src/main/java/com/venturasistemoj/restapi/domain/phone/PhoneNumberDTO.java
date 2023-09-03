@@ -1,13 +1,11 @@
 package com.venturasistemoj.restapi.domain.phone;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.venturasistemoj.restapi.domain.address.AddressDTO;
+import com.venturasistemoj.restapi.domain.user.User;
 import com.venturasistemoj.restapi.domain.user.UserDTO;
 
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 /**
  * [EN] Phone number data transfer class.
@@ -17,23 +15,28 @@ import lombok.NoArgsConstructor;
  * @since 2023
  */
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public class PhoneNumberDTO {
-
-	@NotNull private Long phoneId;
-	private String type;
-	@NotNull private String number;
-
-	@JsonBackReference
-	@NotNull
-	private UserDTO userDTO;
-
-	@Override
-	public String toString() {
-		return "PhoneNumberDTO [phoneId=" + phoneId + ", type=" + type + ", number=" + number + "]";
+public record PhoneNumberDTO(
+		@NotNull Long phoneId,
+		String type,
+		@NotNull String number,
+		@JsonBackReference @NotNull UserDTO userDTO
+) {
+	public PhoneNumberDTO withUserDTO(UserDTO userDTO) {
+		return new PhoneNumberDTO(phoneId, type, number, userDTO);
 	}
 
+	public boolean isValid() {
+		// Check for non-null values and other validation criteria
+		return phoneId() != null &&
+				type() != null && !type().isEmpty() &&
+				number() != null && !number().isEmpty();
+	}
+
+	public static PhoneNumberDTO createSamplePhoneNumber(UserDTO userDTO) {
+		return new PhoneNumberDTO(1L, "Cel", "(21) 96687-8776", userDTO);
+	}
+
+	public static PhoneNumberDTO createSamplePhoneNumber() {
+		return new PhoneNumberDTO(1L, "Cel", "(21) 96687-8776", null);
+	}
 }

@@ -41,7 +41,7 @@ public class UserServiceImpl implements UserService {
 				throw new IllegalArgumentException(); // RN2
 		});
 
-		if(userRepository.findByCpf(userDTO.getCpf()) != null || ! checkUserState(userDTO))
+		if(userRepository.findByCpf(userDTO.cpf()) != null || ! checkUserState(userDTO))
 			throw new IllegalUserStateException("Dados do usuário incompletos ou cpf duplicado!"); // RN1
 
 		User user = userMapper.userDTOToUser(userDTO);
@@ -72,11 +72,11 @@ public class UserServiceImpl implements UserService {
 		if( ! checkUserCpf(existingUser, userDTO))
 			throw new IllegalArgumentException();
 
-		existingUser.setName(userDTO.getName());
-		existingUser.setSurName(userDTO.getSurName());
-		existingUser.setBirthDate(userDTO.getBirthDate());
-		existingUser.setCpf(userDTO.getCpf());
-		existingUser.setEmail(userDTO.getEmail());
+		existingUser.setName(userDTO.name());
+		existingUser.setSurName(userDTO.surName());
+		existingUser.setBirthDate(userDTO.birthDate());
+		existingUser.setCpf(userDTO.cpf());
+		existingUser.setEmail(userDTO.email());
 
 		User updatedUser = userRepository.save(existingUser);
 		return userMapper.userToUserDTO(updatedUser);
@@ -126,11 +126,11 @@ public class UserServiceImpl implements UserService {
 
 	// verifica a consistência dos dados do usuário
 	private boolean checkUserState(UserDTO userDTO) {
-		if( userDTO.getName() == null
-				|| userDTO.getSurName() == null
-				|| userDTO.getBirthDate() == null
-				|| userDTO.getCpf() == null
-				|| userDTO.getEmail() == null )
+		if( userDTO.name() == null
+				|| userDTO.surName() == null
+				|| userDTO.birthDate() == null
+				|| userDTO.cpf() == null
+				|| userDTO.email() == null )
 			return false;
 
 		return true;
@@ -139,11 +139,11 @@ public class UserServiceImpl implements UserService {
 	// verifica duplicidade de usuário com cpf diferente
 	private boolean checkUserCpf(User existingUser, UserDTO userDTO) {
 
-		if( userDTO.getName().equals(existingUser.getName())
-				&& userDTO.getSurName().equals(existingUser.getSurName())
-				&& userDTO.getBirthDate().equals(existingUser.getBirthDate())
-				&& userDTO.getEmail().equals(existingUser.getEmail())
-				&& ! userDTO.getCpf().equals(existingUser.getCpf()) )
+		if( userDTO.name().equals(existingUser.getName())
+				&& userDTO.surName().equals(existingUser.getSurName())
+				&& userDTO.birthDate().equals(existingUser.getBirthDate())
+				&& userDTO.email().equals(existingUser.getEmail())
+				&& ! userDTO.cpf().equals(existingUser.getCpf()) )
 			return false;
 
 		return true;

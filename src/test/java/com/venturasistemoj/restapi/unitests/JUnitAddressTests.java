@@ -42,28 +42,9 @@ public class JUnitAddressTests {
 		// inicializa os campos anotados com @Mock e os injeta com @InjectMocks no controlador
 		MockitoAnnotations.openMocks(this);
 
-		userDTO = UserDTO.builder()
-				.userId(userId)
-				.name("Luiz Inacio")
-				.surName("da Silva")
-				.birthDate(LocalDate.of(1972, Month.FEBRUARY, 22))
-				.cpf("123.456.789-10")
-				.email("lula@prov.com")
-				.build();
+		userDTO = UserDTO.createSampleMaleUser(addressDTO);
 
-		addressDTO = AddressDTO.builder()
-				.addressId(1L)
-				.publicPlace("Avenida")
-				.streetAddress("Glasshouse, 69")
-				.complement("1001")
-				.city("Rio 40º")
-				.state("RJ")
-				.zipCode("69.069-069")
-				.build();
-
-		userDTO.setAddressDTO(addressDTO); // atribui endereço a usuário
-		addressDTO.setUserDTO(userDTO); // atribui usuário a endereço
-
+		addressDTO = AddressDTO.createSampleAddress(userDTO);
 	}
 
 	@Test
@@ -81,27 +62,9 @@ public class JUnitAddressTests {
 	@Test
 	void testUpdateAddress() throws IllegalArgumentException, NotFoundException {
 
-		UserDTO newUser = UserDTO.builder()
-				.userId(userId)
-				.name("Dilma")
-				.surName("Rousseff")
-				.birthDate(LocalDate.of(1956, Month.OCTOBER, 26))
-				.cpf("789.456.123-10")
-				.email("dilmae@prov.com")
-				.build();
+		UserDTO newUser = UserDTO.createSampleUser();
 
-		AddressDTO newAddress = AddressDTO.builder()
-				.addressId(1L)
-				.publicPlace("Avenida")
-				.streetAddress("Planalto, 69")
-				.complement("1010")
-				.city("Rio")
-				.state("RJ")
-				.zipCode("69.069-069")
-				.userDTO(userDTO)
-				.build();
-
-		newAddress.setUserDTO(newUser);
+		AddressDTO newAddress = AddressDTO.createSampleAddress(userDTO);
 
 		when(addressService.updateAddress(userId, newAddress)).thenReturn(newAddress);
 		when(addressService.getAddressByUserId(userId)).thenReturn(newAddress);
@@ -109,10 +72,10 @@ public class JUnitAddressTests {
 		ResponseEntity<?> response = addressController.updateAddress(userId, newAddress);
 
 		assertEquals(HttpStatus.OK, response.getStatusCode());
-		assertEquals(newAddress.getStreetAddress(), ((AddressDTO) response.getBody()).getStreetAddress());
-		assertEquals(newAddress.getState(), ((AddressDTO) response.getBody()).getState());
-		assertEquals(newAddress.getZipCode(), ((AddressDTO) response.getBody()).getZipCode());
-		assertEquals(newAddress.getUserDTO(), ((AddressDTO) response.getBody()).getUserDTO());
+		assertEquals(newAddress.streetAddress(), ((AddressDTO) response.getBody()).streetAddress());
+		assertEquals(newAddress.state(), ((AddressDTO) response.getBody()).state());
+		assertEquals(newAddress.zipCode(), ((AddressDTO) response.getBody()).zipCode());
+		assertEquals(newAddress.userDTO(), ((AddressDTO) response.getBody()).userDTO());
 	}
 
 	void testGetAddressByUserId() throws NotFoundException {

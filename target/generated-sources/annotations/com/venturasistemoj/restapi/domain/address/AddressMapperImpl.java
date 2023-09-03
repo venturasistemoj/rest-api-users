@@ -1,16 +1,19 @@
 package com.venturasistemoj.restapi.domain.address;
 
+import com.venturasistemoj.restapi.domain.phone.PhoneNumberDTO;
 import com.venturasistemoj.restapi.domain.user.User;
 import com.venturasistemoj.restapi.domain.user.UserDTO;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import javax.annotation.processing.Generated;
 import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2023-08-24T12:27:26-0300",
-    comments = "version: 1.5.5.Final, compiler: Eclipse JDT (IDE) 3.33.0.v20230218-1114, environment: Java 17.0.5 (Oracle Corporation)"
+    date = "2023-09-03T16:54:03-0300",
+    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 20.0.2.1 (Amazon.com Inc.)"
 )
 @Component
 public class AddressMapperImpl implements AddressMapper {
@@ -23,14 +26,14 @@ public class AddressMapperImpl implements AddressMapper {
 
         Address address = new Address();
 
-        address.setUser( userDTOToUser( addressDTO.getUserDTO() ) );
-        address.setAddressId( addressDTO.getAddressId() );
-        address.setCity( addressDTO.getCity() );
-        address.setComplement( addressDTO.getComplement() );
-        address.setPublicPlace( addressDTO.getPublicPlace() );
-        address.setState( addressDTO.getState() );
-        address.setStreetAddress( addressDTO.getStreetAddress() );
-        address.setZipCode( addressDTO.getZipCode() );
+        address.setUser( userDTOToUser( addressDTO.userDTO() ) );
+        address.setAddressId( addressDTO.addressId() );
+        address.setPublicPlace( addressDTO.publicPlace() );
+        address.setStreetAddress( addressDTO.streetAddress() );
+        address.setComplement( addressDTO.complement() );
+        address.setCity( addressDTO.city() );
+        address.setState( addressDTO.state() );
+        address.setZipCode( addressDTO.zipCode() );
 
         return address;
     }
@@ -41,18 +44,27 @@ public class AddressMapperImpl implements AddressMapper {
             return null;
         }
 
-        AddressDTO.AddressDTOBuilder addressDTO = AddressDTO.builder();
+        UserDTO userDTO = null;
+        Long addressId = null;
+        String publicPlace = null;
+        String streetAddress = null;
+        String complement = null;
+        String city = null;
+        String state = null;
+        String zipCode = null;
 
-        addressDTO.userDTO( userToUserDTO( address.getUser() ) );
-        addressDTO.addressId( address.getAddressId() );
-        addressDTO.city( address.getCity() );
-        addressDTO.complement( address.getComplement() );
-        addressDTO.publicPlace( address.getPublicPlace() );
-        addressDTO.state( address.getState() );
-        addressDTO.streetAddress( address.getStreetAddress() );
-        addressDTO.zipCode( address.getZipCode() );
+        userDTO = userToUserDTO( address.getUser() );
+        addressId = address.getAddressId();
+        publicPlace = address.getPublicPlace();
+        streetAddress = address.getStreetAddress();
+        complement = address.getComplement();
+        city = address.getCity();
+        state = address.getState();
+        zipCode = address.getZipCode();
 
-        return addressDTO.build();
+        AddressDTO addressDTO = new AddressDTO( addressId, publicPlace, streetAddress, complement, city, state, zipCode, userDTO );
+
+        return addressDTO;
     }
 
     @Override
@@ -90,12 +102,12 @@ public class AddressMapperImpl implements AddressMapper {
 
         User user = new User();
 
-        user.setBirthDate( userDTO.getBirthDate() );
-        user.setCpf( userDTO.getCpf() );
-        user.setEmail( userDTO.getEmail() );
-        user.setName( userDTO.getName() );
-        user.setSurName( userDTO.getSurName() );
-        user.setUserId( userDTO.getUserId() );
+        user.setUserId( userDTO.userId() );
+        user.setName( userDTO.name() );
+        user.setSurName( userDTO.surName() );
+        user.setBirthDate( userDTO.birthDate() );
+        user.setCpf( userDTO.cpf() );
+        user.setEmail( userDTO.email() );
 
         return user;
     }
@@ -105,16 +117,26 @@ public class AddressMapperImpl implements AddressMapper {
             return null;
         }
 
-        UserDTO.UserDTOBuilder userDTO = UserDTO.builder();
+        Long userId = null;
+        String name = null;
+        String surName = null;
+        LocalDate birthDate = null;
+        String cpf = null;
+        String email = null;
 
-        userDTO.birthDate( user.getBirthDate() );
-        userDTO.cpf( user.getCpf() );
-        userDTO.email( user.getEmail() );
-        userDTO.name( user.getName() );
-        userDTO.surName( user.getSurName() );
-        userDTO.userId( user.getUserId() );
+        userId = user.getUserId();
+        name = user.getName();
+        surName = user.getSurName();
+        birthDate = user.getBirthDate();
+        cpf = user.getCpf();
+        email = user.getEmail();
 
-        return userDTO.build();
+        AddressDTO addressDTO = null;
+        Set<PhoneNumberDTO> phonesDTO = null;
+
+        UserDTO userDTO = new UserDTO( userId, name, surName, birthDate, cpf, email, addressDTO, phonesDTO );
+
+        return userDTO;
     }
 
     protected AddressDTO addressToAddressDTO1(Address address) {
@@ -122,16 +144,26 @@ public class AddressMapperImpl implements AddressMapper {
             return null;
         }
 
-        AddressDTO.AddressDTOBuilder addressDTO = AddressDTO.builder();
+        Long addressId = null;
+        String publicPlace = null;
+        String streetAddress = null;
+        String complement = null;
+        String city = null;
+        String state = null;
+        String zipCode = null;
 
-        addressDTO.addressId( address.getAddressId() );
-        addressDTO.city( address.getCity() );
-        addressDTO.complement( address.getComplement() );
-        addressDTO.publicPlace( address.getPublicPlace() );
-        addressDTO.state( address.getState() );
-        addressDTO.streetAddress( address.getStreetAddress() );
-        addressDTO.zipCode( address.getZipCode() );
+        addressId = address.getAddressId();
+        publicPlace = address.getPublicPlace();
+        streetAddress = address.getStreetAddress();
+        complement = address.getComplement();
+        city = address.getCity();
+        state = address.getState();
+        zipCode = address.getZipCode();
 
-        return addressDTO.build();
+        UserDTO userDTO = null;
+
+        AddressDTO addressDTO = new AddressDTO( addressId, publicPlace, streetAddress, complement, city, state, zipCode, userDTO );
+
+        return addressDTO;
     }
 }

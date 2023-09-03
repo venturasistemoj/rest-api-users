@@ -29,16 +29,16 @@ import com.venturasistemoj.restapi.domain.user.UserService;
  * This claas uses the Mockito library to create UserRepository mocks and inject them into the UserController using
  * the @InjectMocks annotation. It also uses the @BeforeEach annotation to initialize the mocks before each test using
  * MockitoAnnotations.openMocks(this).
- *
+ * <p>
  * On each test, configures the expected behavior of the mocks, then calls the methods of UserController and
  * checks the results. The when method activates fragmentation methods and is used for the simulation to return a value
  * specific when a specific method is called.
- *
+ * <p>
  * [PT] Classe de teste com JUnit e Mockito (Sem carregar o contexto da aplicação).
  * Esta classe utiliza a biblioteca Mockito para criar mocks de UserService e os injeta no UserController com a
  * anotação @InjectMocks. Também utiliza a anotação @BeforeEach para inicializar os mocks antes de cada teste usando
  * MockitoAnnotations.openMocks(this).
- *
+ * <p>
  * Em cada teste, configura o comportamento esperado dos mocks usando a função when e thenReturn do Mockito.
  * Por fim, verifica os resultados do teste usando as funções assert do JUnit, como assertEquals.
  *
@@ -48,101 +48,87 @@ import com.venturasistemoj.restapi.domain.user.UserService;
 
 class JUnitUserTests {
 
-	@Mock
-	private UserService userService;
+    @Mock
+    private UserService userService;
 
-	@InjectMocks
-	private UserController userController;
+    @InjectMocks
+    private UserController userController;
 
-	private UserDTO userDTO;
+    private UserDTO userDTO;
 
-	@BeforeEach
-	void setup() {
+    @BeforeEach
+    void setup() {
 
-		// inicializa os campos anotados com @Mock e os injeta com @InjectMocks no controlador
-		MockitoAnnotations.openMocks(this);
+        // inicializa os campos anotados com @Mock e os injeta com @InjectMocks no controlador
+        MockitoAnnotations.openMocks(this);
 
-		// Utilização do design patter Builder por meio do Lombok
-		userDTO = UserDTO.builder()
-				.userId(1L)
-				.name("Luiz Inacio")
-				.surName("da Silva")
-				.birthDate(LocalDate.of(1972, Month.FEBRUARY, 22))
-				.cpf("123.456.789-10")
-				.email("lula@prov.com")
-				.build();
-	}
+        // Utilização do design patter Builder por meio do Lombok
+        userDTO = new UserDTO(1L, "Luiz Inacio", "da Silva", LocalDate.of(1972, Month.FEBRUARY, 22), "123.456.789-10", "lula@prov.com", null, null);
+    }
 
-	@Test
-	void testCreateUser() {
+    @Test
+    void testCreateUser() {
 
-		when(userService.createUser(userDTO)).thenReturn(userDTO);
+        when(userService.createUser(userDTO)).thenReturn(userDTO);
 
-		ResponseEntity<?> response = userController.createUser(userDTO);
+        ResponseEntity<?> response = userController.createUser(userDTO);
 
-		assertEquals(HttpStatus.CREATED, response.getStatusCode());
-		assertEquals(userDTO, response.getBody());
-	}
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertEquals(userDTO, response.getBody());
+    }
 
-	@Test
-	void testUpdateUser() throws NotFoundException {
+    @Test
+    void testUpdateUser() throws NotFoundException {
 
-		UserDTO newUser = UserDTO.builder()
-				.userId(1L)
-				.name("Dilma")
-				.surName("Rousseff")
-				.birthDate(LocalDate.of(1956, Month.OCTOBER, 26))
-				.cpf("789.456.123-10")
-				.email("dilma@prov.com")
-				.build();
+        UserDTO newUser = UserDTO.createSampleUser();
 
-		final Long userId = newUser.getUserId();
-		when(userService.updateUser(userId, newUser)).thenReturn(newUser);
-		when(userService.getUserById(userId)).thenReturn(newUser);
+        final Long userId = newUser.userId();
+        when(userService.updateUser(userId, newUser)).thenReturn(newUser);
+        when(userService.getUserById(userId)).thenReturn(newUser);
 
-		ResponseEntity<?> response = userController.updateUser(userId, newUser);
+        ResponseEntity<?> response = userController.updateUser(userId, newUser);
 
-		assertEquals(HttpStatus.OK, response.getStatusCode());
-		assertEquals(newUser.getSurName(), ((UserDTO) response.getBody()).getSurName());
-		assertEquals(newUser.getEmail(), ((UserDTO) response.getBody()).getEmail());
-		assertEquals(newUser.getCpf(), ((UserDTO) response.getBody()).getCpf());
-	}
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(newUser.surName(), ((UserDTO) response.getBody()).surName());
+        assertEquals(newUser.email(), ((UserDTO) response.getBody()).email());
+        assertEquals(newUser.cpf(), ((UserDTO) response.getBody()).cpf());
+    }
 
-	@Test
-	void testGetUserById() throws NotFoundException {
+    @Test
+    void testGetUserById() throws NotFoundException {
 
-		when(userService.getUserById(1L)).thenReturn(userDTO);
+        when(userService.getUserById(1L)).thenReturn(userDTO);
 
-		ResponseEntity<?> response = userController.getUserById(1L);
+        ResponseEntity<?> response = userController.getUserById(1L);
 
-		assertEquals(HttpStatus.OK, response.getStatusCode());
-		assertEquals(userDTO, response.getBody());
-	}
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(userDTO, response.getBody());
+    }
 
-	@Test
-	void testGetUsers() throws NotFoundException {
+    @Test
+    void testGetUsers() throws NotFoundException {
 
-		List<UserDTO> userList = new ArrayList<>();
-		userList.add(userDTO);
-		when(userService.getUsers()).thenReturn(userList);
+        List<UserDTO> userList = new ArrayList<>();
+        userList.add(userDTO);
+        when(userService.getUsers()).thenReturn(userList);
 
-		ResponseEntity<?> response = userController.getUsers();
+        ResponseEntity<?> response = userController.getUsers();
 
-		@SuppressWarnings("unchecked")
-		List<UserDTO> expectedList = (List<UserDTO>) response.getBody();
-		assertEquals(HttpStatus.OK, response.getStatusCode());
-		assertTrue(userList.containsAll(expectedList));
-		assertEquals(userList, response.getBody());
-	}
+        @SuppressWarnings("unchecked")
+        List<UserDTO> expectedList = (List<UserDTO>) response.getBody();
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertTrue(userList.containsAll(expectedList));
+        assertEquals(userList, response.getBody());
+    }
 
-	@Test
-	void testDeleteUser() throws NotFoundException {
+    @Test
+    void testDeleteUser() throws NotFoundException {
 
-		when(userService.getUserById(1L)).thenReturn(userDTO);
+        when(userService.getUserById(1L)).thenReturn(userDTO);
 
-		ResponseEntity<?> response = userController.deleteUser(1L);
+        ResponseEntity<?> response = userController.deleteUser(1L);
 
-		assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
-		verify(userService, times(1)).deleteUser(1L);
-	}
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        verify(userService, times(1)).deleteUser(1L);
+    }
 }

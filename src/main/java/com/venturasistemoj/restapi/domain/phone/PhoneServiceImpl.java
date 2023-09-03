@@ -18,7 +18,7 @@ import jakarta.validation.constraints.NotNull;
 
 /**
  * [EN] Class implementing the PhoneService interface for managing business logic related to PhoneNumbers.
- *
+ * <p>
  * [PT] Classe de implementação da interface PhoneService para gerenciar a lógica de negócios relacionada a telefones.
  *
  * @author Wilson Ventura
@@ -28,152 +28,148 @@ import jakarta.validation.constraints.NotNull;
 @Service
 public class PhoneServiceImpl implements PhoneService {
 
-	@Autowired private PhoneRepository phoneRepository;
-	@Autowired private PhoneMapper phoneMapper;
+    @Autowired
+    private PhoneRepository phoneRepository;
+    @Autowired
+    private PhoneMapper phoneMapper;
 
-	@Autowired private UserRepository userRepository;
-	@Autowired private UserMapper userMapper;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private UserMapper userMapper;
 
-	private static final String INCONPLETE_PHONE_DATA = "Dados do telefone incompletos!";
+    private static final String INCONPLETE_PHONE_DATA = "Dados do telefone incompletos!";
 
-	/**
-	 * Cria um novo telefone para um usuário existente.
-	 * Caso o usuário não exista, lança NotFoundException.
-	 * Caso os dados do telefone estejam corrompidos ou sejam iguais,
-	 * lança IllegalPhoneStateException e IllegalArgumentException, respectivamente.
-	 * RN5: não é possível criar telefone sem usuário.
-	 */
-	@Override
-	public PhoneNumberDTO createPhoneNumber(@NotNull Long userId, @Valid PhoneNumberDTO phoneDTO)
-			throws NotFoundException, IllegalStateException, IllegalPhoneStateException {
+    /**
+     * Cria um novo telefone para um usuário existente.
+     * Caso o usuário não exista, lança NotFoundException.
+     * Caso os dados do telefone estejam corrompidos ou sejam iguais,
+     * lança IllegalPhoneStateException e IllegalArgumentException, respectivamente.
+     * RN5: não é possível criar telefone sem usuário.
+     */
+    @Override
+    public PhoneNumberDTO createPhoneNumber(@NotNull Long userId, @Valid PhoneNumberDTO phoneDTO)
+            throws NotFoundException, IllegalStateException, IllegalPhoneStateException {
 
-		User existingUser = checkUser(userId); // RN5
+        User existingUser = checkUser(userId); // RN5
 
-		if(phoneDTO.getType() == null || phoneDTO.getNumber() == null)
-			throw new IllegalPhoneStateException(INCONPLETE_PHONE_DATA);
+        if (!phoneDTO.isValid())
+            throw new IllegalPhoneStateException(INCONPLETE_PHONE_DATA);
 
-		/* O seguinte idioma, assim como a classe PhoneComparator, tornaram-se desnecessários com
-		 * a substituição da estrutura de dados dos telefones da API de List para Set*/
+        /* O seguinte idioma, assim como a classe PhoneComparator, tornaram-se desnecessários com
+         * a substituição da estrutura de dados dos telefones da API de List para Set*/
 
-		//if (existingUser.getPhones().contains(phoneMapper.phoneNumberDTOToPhoneNumber(phoneDTO)))
-		//throw new IllegalStateException("Número de telefone duplicado!");
+        //if (existingUser.getPhones().contains(phoneMapper.phoneNumberDTOToPhoneNumber(phoneDTO)))
+        //throw new IllegalStateException("Número de telefone duplicado!");
 
-		phoneDTO.setUserDTO(userMapper.userToUserDTO(existingUser)); // associa usuário a telefone
-		PhoneNumber savedPhoneNumber = phoneRepository.save(phoneMapper.phoneNumberDTOToPhoneNumber(phoneDTO));
-		return phoneMapper.phoneNumberToPhoneNumberDTO(savedPhoneNumber);
-	}
+        phoneDTO = phoneDTO.withUserDTO(userMapper.userToUserDTO(existingUser)); // Associate user with the phone
 
-	/**
-	 * Atualiza um telefone no conjunto de telefones de um usuário existente.
-	 * Caso o usuário não exista, lança NotFoundException.
-	 * Caso os dados do telefone estejam corrompidos, lança IllegalPhoneStateException.
-	 * Retorna a lista de telefones atualizada.
-	 */
-	@Override
-	@Transactional(rollbackFor = IllegalArgumentException.class)
-	public Set<PhoneNumberDTO> updatePhoneNumber(@NotNull Long userId, @Valid PhoneNumberDTO phoneDTO)
-			throws NotFoundException, IllegalPhoneStateException {
+        PhoneNumber savedPhoneNumber = phoneRepository.save(phoneMapper.phoneNumberDTOToPhoneNumber(phoneDTO));
+        return phoneMapper.phoneNumberToPhoneNumberDTO(savedPhoneNumber);
+    }
 
-		if( ! checkPhoneState(phoneDTO))
-			throw new IllegalPhoneStateException(INCONPLETE_PHONE_DATA);
+    /**
+     * Atualiza um telefone no conjunto de telefones de um usuário existente.
+     * Caso o usuário não exista, lança NotFoundException.
+     * Caso os dados do telefone estejam corrompidos, lança IllegalPhoneStateException.
+     * Retorna a lista de telefones atualizada.
+     */
+    @Override
+    @Transactional(rollbackFor = IllegalArgumentException.class)
+    public Set<PhoneNumberDTO> updatePhoneNumber(@NotNull Long userId, @Valid PhoneNumberDTO phoneDTO)
+            throws NotFoundException, IllegalPhoneStateException {
 
-		User existingUser = checkUser(userId);
-		Set<PhoneNumber> userPhones = phoneRepository.findAllByUser(existingUser);
+        if (!phoneDTO.isValid())
+            throw new IllegalPhoneStateException(INCONPLETE_PHONE_DATA);
 
-		if(userPhones.isEmpty())
-			throw new NotFoundException();
+        User existingUser = checkUser(userId);
+        Set<PhoneNumber> userPhones = phoneRepository.findAllByUser(existingUser);
 
-		userPhones.forEach(phone -> {
-			if(phone.getPhoneId().equals(phoneDTO.getPhoneId())
-					&& ( ! phone.getNumber().equals(phoneDTO.getNumber())) ) {
-				phone.setType(phoneDTO.getType());
-				phone.setNumber(phoneDTO.getNumber());
-			}
-		});
+        if (userPhones.isEmpty())
+            throw new NotFoundException();
 
-		phoneRepository.saveAll(userPhones);
+        userPhones.forEach(phone -> {
+            if (phone.getPhoneId().equals(phoneDTO.phoneId())
+                    && (!phone.getNumber().equals(phoneDTO.number()))) {
+                phone.setType(phoneDTO.type());
+                phone.setNumber(phoneDTO.number());
+            }
+        });
 
-		return phoneMapper.phoneNumbersToPhoneNumbersDTO(userPhones);
-	}
+        phoneRepository.saveAll(userPhones);
 
-	/**
-	 * Obtém o conjunto de telefones de um usuário existente.
-	 * Caso o usuário não exista ou não haja telefones cadastrados, lança NotFoundException.
-	 */
-	@Override
-	@Transactional(readOnly = true)
-	public Set<PhoneNumberDTO> getPhonesByUserId(@NotNull Long userId) throws NotFoundException {
+        return phoneMapper.phoneNumbersToPhoneNumbersDTO(userPhones);
+    }
 
-		User existingUser = checkUser(userId);
+    /**
+     * Obtém o conjunto de telefones de um usuário existente.
+     * Caso o usuário não exista ou não haja telefones cadastrados, lança NotFoundException.
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public Set<PhoneNumberDTO> getPhonesByUserId(@NotNull Long userId) throws NotFoundException {
 
-		if( ! existingUser.getPhones().isEmpty())
-			return phoneRepository.findAllByUser(existingUser)
-					.stream()
-					.map(phoneMapper::phoneNumberToPhoneNumberDTO)
-					.collect(Collectors.toSet());
-		else
-			throw new NotFoundException();
-	}
+        User existingUser = checkUser(userId);
 
-	/**
-	 * Obtém todos os telefones da base de dados.
-	 * Caso não haja telefones cadastrados, lança NotFoundException.
-	 */
-	@Override
-	@Transactional(readOnly = true)
-	public Set<PhoneNumberDTO> getPhoneNumbers() throws NotFoundException {
+        if (!existingUser.getPhones().isEmpty())
+            return phoneRepository.findAllByUser(existingUser)
+                    .stream()
+                    .map(phoneMapper::phoneNumberToPhoneNumberDTO)
+                    .collect(Collectors.toSet());
+        else
+            throw new NotFoundException();
+    }
 
-		Set<PhoneNumber> allPhones = phoneRepository.findAll()
-				.stream()
-				.collect(Collectors.toSet());
+    /**
+     * Obtém todos os telefones da base de dados.
+     * Caso não haja telefones cadastrados, lança NotFoundException.
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public Set<PhoneNumberDTO> getPhoneNumbers() throws NotFoundException {
 
-		if(allPhones.isEmpty())
-			throw new NotFoundException();
+        Set<PhoneNumber> allPhones = phoneRepository.findAll()
+                .stream()
+                .collect(Collectors.toSet());
 
-		return phoneMapper.phoneNumbersToPhoneNumbersDTO(allPhones);
-	}
+        if (allPhones.isEmpty())
+            throw new NotFoundException();
 
-	/**
-	 * Remove um telefone do conjunto de telefones de um usuário existente.
-	 * Caso o usuário não exista, lança NotFoundException.
-	 * Caso os dados do telefone a ser removido estejam corrompidos, lança IllegalPhoneStateException.
-	 */
-	@Override
-	@Transactional
-	public void deletePhoneNumber(@NotNull Long userId, @Valid PhoneNumberDTO phoneDTO)
-			throws NotFoundException, IllegalPhoneStateException {
+        return phoneMapper.phoneNumbersToPhoneNumbersDTO(allPhones);
+    }
 
-		PhoneNumber existingPhone = phoneRepository.findById(phoneDTO.getPhoneId()).orElseThrow(NotFoundException::new);
+    /**
+     * Remove um telefone do conjunto de telefones de um usuário existente.
+     * Caso o usuário não exista, lança NotFoundException.
+     * Caso os dados do telefone a ser removido estejam corrompidos, lança IllegalPhoneStateException.
+     */
+    @Override
+    @Transactional
+    public void deletePhoneNumber(@NotNull Long userId, @Valid PhoneNumberDTO phoneDTO)
+            throws NotFoundException, IllegalPhoneStateException {
 
-		User existingUser = checkUser(userId);
+        PhoneNumber existingPhone = phoneRepository.findById(phoneDTO.phoneId()).orElseThrow(NotFoundException::new);
 
-		if( ! checkPhoneState(phoneDTO))
-			throw new IllegalPhoneStateException(INCONPLETE_PHONE_DATA);
+        User existingUser = checkUser(userId);
 
-		existingUser.getPhones().remove(existingPhone); // desassocia telefone da lista do usuário
-		phoneRepository.deleteById(existingPhone.getPhoneId()); // exclui o telefone somente deste usuário
+        if (!phoneDTO.isValid())
+            throw new IllegalPhoneStateException(INCONPLETE_PHONE_DATA);
 
-	}
+        existingUser.getPhones().remove(existingPhone); // desassocia telefone da lista do usuário
+        phoneRepository.deleteById(existingPhone.getPhoneId()); // exclui o telefone somente deste usuário
 
-	// Verifica existência de usuário para associar telefone.
-	@Transactional(readOnly = true)
-	private User checkUser(Long userId) throws NotFoundException {
+    }
 
-		Optional<User> optionalUser = userRepository.findById(userId);
+    // Verifica existência de usuário para associar telefone.
+    @Transactional(readOnly = true)
+    protected User checkUser(Long userId) throws NotFoundException {
 
-		if(optionalUser.isPresent())
-			return optionalUser.get();
-		else
-			throw new NotFoundException();
-	}
+        Optional<User> optionalUser = userRepository.findById(userId);
 
-	// verifica a consistência dos dados do telefone
-	private boolean checkPhoneState(PhoneNumberDTO phoneDTO) {
-
-		if(phoneDTO.getPhoneId() == null || phoneDTO.getType() == null || phoneDTO.getNumber() == null)
-			return false;
-
-		return true;
-	}
+        if (optionalUser.isPresent())
+            return optionalUser.get();
+        else
+            throw new NotFoundException();
+    }
 
 }

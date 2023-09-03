@@ -1,18 +1,15 @@
 package com.venturasistemoj.restapi.domain.user;
 
-import java.time.LocalDate;
-import java.util.Objects;
-import java.util.Set;
-
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.venturasistemoj.restapi.domain.address.AddressDTO;
 import com.venturasistemoj.restapi.domain.phone.PhoneNumberDTO;
 
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+
+import java.time.LocalDate;
+import java.time.Month;
+import java.util.Objects;
+import java.util.Set;
 
 /**
  * [EN] User data transfer class
@@ -22,25 +19,16 @@ import lombok.NoArgsConstructor;
  * @since 2023
  */
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public class UserDTO {
-
-	@NotNull private Long userId;
-	@NotNull private String name;
-	@NotNull private String surName;
-	@NotNull private LocalDate birthDate;
-	@NotNull private String cpf;
-	@NotNull private String email;
-
-	@JsonManagedReference
-	private AddressDTO addressDTO;
-
-	@JsonManagedReference
-	private Set<PhoneNumberDTO> phonesDTO;
-
+public record UserDTO(
+		@NotNull Long userId,
+		@NotNull String name,
+		@NotNull String surName,
+		@NotNull LocalDate birthDate,
+		@NotNull String cpf,
+		@NotNull String email,
+		@JsonManagedReference AddressDTO addressDTO,
+		@JsonManagedReference Set<PhoneNumberDTO> phonesDTO
+) {
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -62,4 +50,24 @@ public class UserDTO {
 				+ ", cpf=" + cpf + ", email=" + email + ", addressDTO=" + addressDTO + ", phonesDTO=" + phonesDTO + "]";
 	}
 
+	public static UserDTO createSampleUser() {
+		return new UserDTO(
+				1L,
+				"Dilma",
+				"Rousseff",
+				LocalDate.of(1956, Month.OCTOBER, 26),
+				"789.456.123-10",
+				"dilma@prov.com",
+				null,
+				null
+		);
+	}
+
+	public static UserDTO createSampleMaleUser(){
+		return new UserDTO(1L, "Luiz Inacio", "da Silva", LocalDate.of(1972, Month.FEBRUARY, 22), "123.456.789-10", "lula@prov.com", null, null);
+	}
+
+	public static UserDTO createSampleMaleUser(AddressDTO addressDTO){
+		return new UserDTO(1L, "Luiz Inacio", "da Silva", LocalDate.of(1972, Month.FEBRUARY, 22), "123.456.789-10", "lula@prov.com", addressDTO, null);
+	}
 }

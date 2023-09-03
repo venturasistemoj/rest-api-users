@@ -11,6 +11,9 @@ import java.time.Month;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.venturasistemoj.restapi.domain.address.AddressDTO;
+import jakarta.validation.constraints.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -27,125 +30,110 @@ import com.venturasistemoj.restapi.domain.user.UserDTO;
 
 public class JUnitPhoneTests {
 
-	@Mock
-	PhoneService phoneService;
+    @Mock
+    PhoneService phoneService;
 
-	@InjectMocks
-	PhoneController phoneController;
+    @InjectMocks
+    PhoneController phoneController;
 
-	private UserDTO userDTO;
-	private PhoneNumberDTO numberDTO;
-	private final Long userId = 1L;
+    private UserDTO userDTO;
+    private PhoneNumberDTO numberDTO;
+    private final Long userId = 1L;
 
-	@BeforeEach
-	void setup() {
+    @BeforeEach
+    void setup() {
 
-		// inicializa os campos anotados com @Mock e os injeta com @InjectMocks no controlador
-		MockitoAnnotations.openMocks(this);
+        // inicializa os campos anotados com @Mock e os injeta com @InjectMocks no controlador
+        MockitoAnnotations.openMocks(this);
 
-		userDTO = UserDTO.builder()
-				.userId(userId)
-				.name("Luiz Inacio")
-				.surName("da Silva")
-				.birthDate(LocalDate.of(1972, Month.FEBRUARY, 22))
-				.cpf("123.456.789-10")
-				.email("lula@prov.com")
-				.build();
+        Set<PhoneNumberDTO> newPhonesDTO = new HashSet<>();
+        numberDTO = new PhoneNumberDTO(
+                1L,
+                "Cel",
+                "(21) 96687-8776",
+                userDTO // Associate the userDTO with the phone number during creation
+        );
+        newPhonesDTO.add(numberDTO);
 
-		numberDTO = PhoneNumberDTO.builder()
-				.phoneId(1L)
-				.type("Cel")
-				.number("(21) 96687-8776")
-				.build();
+        // Associa conjunto de telefones a usuário
+        userDTO = new UserDTO(userId, "Luiz Inacio", "da Silva", LocalDate.of(1972, Month.FEBRUARY, 22), "123.456.789-10", "lula@prov.com", null, newPhonesDTO);
+    }
 
-		// Associa conjunto de telefones a usuário
-		Set<PhoneNumberDTO> phonesDTO = new HashSet<>();
-		phonesDTO.add(numberDTO);
-		userDTO.setPhonesDTO(phonesDTO);
+    @Test
+    void testCreatePhoneNumber() throws IllegalArgumentException, NotFoundException {
 
-		// Associa usuário a telefone
-		numberDTO.setUserDTO(userDTO);
-	}
+        when(phoneService.createPhoneNumber(userId, numberDTO)).thenReturn(numberDTO);
 
-	@Test
-	void testCreatePhoneNumber() throws IllegalArgumentException, NotFoundException {
+        ResponseEntity<?> response = phoneController.createPhoneNumber(userId, numberDTO);
 
-		when(phoneService.createPhoneNumber(userId, numberDTO)).thenReturn(numberDTO);
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertEquals(numberDTO, response.getBody());
+    }
 
-		ResponseEntity<?> response = phoneController.createPhoneNumber(userId, numberDTO);
+    @Test
+    void testUpdatePhoneNumber() throws NotFoundException, IllegalArgumentException {
 
-		assertEquals(HttpStatus.CREATED, response.getStatusCode());
-		assertEquals(numberDTO, response.getBody());
-	}
+        PhoneNumberDTO newPhone = new PhoneNumberDTO(1L, "Mob", "(21) 98966-2377", null);
 
-	@Test
-	void testUpdatePhoneNumber() throws NotFoundException, IllegalArgumentException {
+        Set<PhoneNumberDTO> newPhonesDTO = new HashSet<>();
+        newPhonesDTO.add(newPhone);
 
-		PhoneNumberDTO newPhone = PhoneNumberDTO.builder()
-				.phoneId(1L)
-				.type("Mob")
-				.number("(21) 98966-2377")
-				.build();
+        when(phoneService.updatePhoneNumber(userId, newPhone)).thenReturn(newPhonesDTO);
+        when(phoneService.getPhonesByUserId(userId)).thenReturn(newPhonesDTO);
 
-		Set<PhoneNumberDTO> newPhonesDTO = new HashSet<>();
-		newPhonesDTO.add(newPhone);
+        ResponseEntity<?> response = phoneController.updatePhoneNumber(userId, newPhone);
 
-		when(phoneService.updatePhoneNumber(userId, newPhone)).thenReturn(newPhonesDTO);
-		when(phoneService.getPhonesByUserId(userId)).thenReturn(newPhonesDTO);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        @SuppressWarnings("unchecked")
+        Set<PhoneNumberDTO> expectedPhones = (Set<PhoneNumberDTO>) response.getBody();
+        assertTrue(expectedPhones.containsAll(newPhonesDTO));
+    }
 
-		ResponseEntity<?> response = phoneController.updatePhoneNumber(userId, newPhone);
+    @Test
+    void testGetPhonesByUserId() throws NotFoundException {
 
-		assertEquals(HttpStatus.OK, response.getStatusCode());
-		@SuppressWarnings("unchecked")
-		Set<PhoneNumberDTO> expectedPhones = (Set<PhoneNumberDTO>) response.getBody();
-		assertTrue(expectedPhones.containsAll(newPhonesDTO));
-	}
+        Set<PhoneNumberDTO> phoneSet = new HashSet<>();
+        phoneSet.add(numberDTO);
 
-	@Test
-	void testGetPhonesByUserId() throws NotFoundException {
+        when(phoneService.getPhonesByUserId(userId)).thenReturn(phoneSet);
 
-		Set<PhoneNumberDTO> phoneSet = new HashSet<>();
-		phoneSet.add(numberDTO);
+        ResponseEntity<?> response = phoneController.getPhonesByUserId(userId);
 
-		when(phoneService.getPhonesByUserId(userId)).thenReturn(phoneSet);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        @SuppressWarnings("unchecked")
+        Set<PhoneNumberDTO> expectedPhones = (Set<PhoneNumberDTO>) response.getBody();
+        assertTrue(expectedPhones.containsAll(phoneSet));
+    }
 
-		ResponseEntity<?> response = phoneController.getPhonesByUserId(userId);
+    @Test
+    void testGetPhoneNumbers() throws NotFoundException {
 
-		assertEquals(HttpStatus.OK, response.getStatusCode());
-		@SuppressWarnings("unchecked")
-		Set<PhoneNumberDTO> expectedPhones = (Set<PhoneNumberDTO>) response.getBody();
-		assertTrue(expectedPhones.containsAll(phoneSet));
-	}
+        Set<PhoneNumberDTO> phoneSet = new HashSet<>();
+        phoneSet.add(numberDTO);
 
-	@Test
-	void testGetPhoneNumbers() throws NotFoundException {
+        when(phoneService.getPhoneNumbers()).thenReturn(phoneSet);
 
-		Set<PhoneNumberDTO> phoneSet = new HashSet<>();
-		phoneSet.add(numberDTO);
+        ResponseEntity<?> response = phoneController.getPhoneNumbers();
 
-		when(phoneService.getPhoneNumbers()).thenReturn(phoneSet);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        @SuppressWarnings("unchecked")
+        Set<PhoneNumberDTO> expectedPhones = (Set<PhoneNumberDTO>) response.getBody();
+        assertTrue(expectedPhones.containsAll(phoneSet));
+        assertEquals(phoneSet, response.getBody());
+    }
 
-		ResponseEntity<?> response = phoneController.getPhoneNumbers();
+    @Test
+    void testDeletePhoneNumber() throws NotFoundException {
 
-		assertEquals(HttpStatus.OK, response.getStatusCode());
-		@SuppressWarnings("unchecked")
-		Set<PhoneNumberDTO> expectedPhones = (Set<PhoneNumberDTO>) response.getBody();
-		assertTrue(expectedPhones.containsAll(phoneSet));
-		assertEquals(phoneSet, response.getBody());
-	}
+        Set<PhoneNumberDTO> phoneSet = new HashSet<>();
+        phoneSet.add(numberDTO);
 
-	@Test
-	void testDeletePhoneNumber() throws NotFoundException {
+        when(phoneService.getPhonesByUserId(userId)).thenReturn(phoneSet);
 
-		Set<PhoneNumberDTO> phoneSet = new HashSet<>();
-		phoneSet.add(numberDTO);
+        ResponseEntity<?> response = phoneController.deletePhoneNumber(userId, numberDTO);
 
-		when(phoneService.getPhonesByUserId(userId)).thenReturn(phoneSet);
-
-		ResponseEntity<?> response = phoneController.deletePhoneNumber(userId, numberDTO);
-
-		assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
-		verify(phoneService, times(1)).deletePhoneNumber(userId, numberDTO);
-	}
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        verify(phoneService, times(1)).deletePhoneNumber(userId, numberDTO);
+    }
 
 }

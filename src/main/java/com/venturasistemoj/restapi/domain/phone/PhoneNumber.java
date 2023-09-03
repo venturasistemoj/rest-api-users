@@ -14,7 +14,6 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
-import lombok.Data;
 
 /**
  * Entity class for a Phone Number
@@ -25,7 +24,6 @@ import lombok.Data;
 
 @Entity
 @Table(name = "phones")
-@Data
 public class PhoneNumber {
 
 	private static final String PHONE_REGEXP = "^\\(?[1-9]{2}\\)? ?(?:[2-8]|9[1-9])[0-9]{3}\\-?[0-9]{4}$";
@@ -65,4 +63,35 @@ public class PhoneNumber {
 		return Objects.hash(number);
 	}
 
+	public Long getPhoneId() {
+		return phoneId;
+	}
+
+	public void setPhoneId(Long phoneId) {
+		this.phoneId = phoneId;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public String getNumber() {
+		return number;
+	}
+
+	public void setNumber(String number) {
+		this.number = number;
+	}
+
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
+	}
 }

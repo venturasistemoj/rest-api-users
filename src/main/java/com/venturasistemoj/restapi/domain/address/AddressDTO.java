@@ -1,45 +1,53 @@
 package com.venturasistemoj.restapi.domain.address;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.venturasistemoj.restapi.domain.user.UserDTO;
-
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
-/**
- * [EN] Address data transfer class
- * [PT] Classe de tranferência de dados de endereço.
- *
- * @author Wilson Ventura
- * @since 2023
- */
-
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public class AddressDTO {
-
-	@NotNull private Long addressId;
-	@NotNull private String publicPlace;
-	@NotNull private String streetAddress;
-	private String complement;
-	@NotNull private String city;
-	@NotNull private String state;
-	@NotNull private String zipCode;
-
-	@JsonBackReference
-	@NotNull
-	private UserDTO userDTO;
-
-	@Override
-	public String toString() {
-		return "AddressDTO [addressId=" + addressId + ", publicPlace=" + publicPlace + ", streetAddress="
-				+ streetAddress + ", complement=" + complement + ", city=" + city + ", state=" + state + ", zipCode="
-				+ zipCode + "]";
+public record AddressDTO(
+		@NotNull Long addressId,
+		@NotNull String publicPlace,
+		@NotNull String streetAddress,
+		String complement,
+		@NotNull String city,
+		@NotNull String state,
+		@NotNull String zipCode,
+		@NotNull UserDTO userDTO
+) {
+	public static AddressDTO createSampleAddress(UserDTO userDTO) {
+		return new AddressDTO(
+				1L,
+				"Avenida",
+				"Glasshouse, 69",
+				"1001",
+				"Rio 40º",
+				"RJ",
+				"69.069-069",
+				userDTO
+		);
+	}
+	public static AddressDTO createSampleAddress() {
+		return new AddressDTO(
+				1L,
+				"Avenida",
+				"Glasshouse, 69",
+				"1001",
+				"Rio 40º",
+				"RJ",
+				"69.069-069",
+				null
+		);
 	}
 
+	public boolean isValid() {
+		// Check for non-empty strings and validate zip code format
+		return !publicPlace.isEmpty() &&
+				!streetAddress.isEmpty() &&
+				!city.isEmpty() &&
+				!state.isEmpty() &&
+				isValidZipCode(zipCode);
+	}
+
+	private boolean isValidZipCode(String zipCode) {
+		return true; //todo
+	}
 }
