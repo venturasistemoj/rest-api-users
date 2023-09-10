@@ -33,6 +33,7 @@ public class UserServiceImpl implements UserService {
 	 * RN2: Caso o mesmo usuário esteja sendo cadastrado com cpf diferente, lança IllegalArgumentException.
 	 */
 	@Override
+	@Transactional
 	public UserDTO createUser(@Valid UserDTO userDTO) throws IllegalArgumentException {
 
 		List<User> databaseUsers = userRepository.findAll();
@@ -120,8 +121,9 @@ public class UserServiceImpl implements UserService {
 	@Transactional
 	public void deleteUser(@NotNull Long userId) throws NotFoundException {
 
-		User existingUser = userRepository.findById(userId).orElseThrow(NotFoundException::new);
-		userRepository.delete(existingUser);
+		User existingUser = userRepository.findById(userId).orElse(null);
+		if(existingUser != null)
+			userRepository.delete(existingUser);
 	}
 
 	// verifica a consistência dos dados do usuário

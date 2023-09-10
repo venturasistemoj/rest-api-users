@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: com.venturasistemoj.restapi.unitests.JUnitUserTests
--------------------------------------------------------------------------------
-Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.059 s - in com.venturasistemoj.restapi.unitests.JUnitUserTests

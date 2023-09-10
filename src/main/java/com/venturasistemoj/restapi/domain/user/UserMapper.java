@@ -2,11 +2,8 @@ package com.venturasistemoj.restapi.domain.user;
 
 import java.util.List;
 
-import org.mapstruct.InheritInverseConfiguration;
-import org.mapstruct.IterableMapping;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.ReportingPolicy;
+import com.venturasistemoj.restapi.domain.phone.PhoneNumber;
+import org.mapstruct.*;
 
 import com.venturasistemoj.restapi.domain.address.AddressMapper;
 import com.venturasistemoj.restapi.domain.phone.PhoneMapper;
@@ -31,23 +28,19 @@ import com.venturasistemoj.restapi.domain.phone.PhoneMapper;
  * @author Wilson Ventura
  * @since 2023
  */
-@Mapper(
-		componentModel = "spring",
-		unmappedTargetPolicy = ReportingPolicy.IGNORE,
-		uses = { AddressMapper.class, PhoneMapper.class }
-		)
+@Mapper
 public interface UserMapper {
 
 	@Mapping(target = "address", source = "addressDTO")
 	@Mapping(target = "phones", source = "phonesDTO")
 	User userDTOToUser(UserDTO userDTO);
 
-	@InheritInverseConfiguration
-	UserDTO userToUserDTO(User user);
+	@AfterMapping
+	private void afterMapping(UserDTO userDTO, @MappingTarget User user) {
+		if (user.getAddress() != null)
+			user.getAddress().setUser(user);
+		if(user.getPhones() != null && user.getPhones().size() > 0)
+			user.getPhones().stream().forEach(x -> x.setUser(user));
+	}
 
-	@IterableMapping(elementTargetType = User.class)
-	List<User> usersDTOToUsers(List<UserDTO> users);
-
-	@InheritInverseConfiguration
-	List<UserDTO> usersToUsersDTO(List<User> users);
 }

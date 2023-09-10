@@ -1,0 +1,8 @@
+<configuration>
+    <!-- Your existing Logback configuration goes here -->
+
+    <!-- Define a logger for H2 SQL statements -->
+    <logger name="org.h2" level="TRACE" additivity="false">
+        <appender-ref ref="CONSOLE" />
+    </logger>
+</configuration>

@@ -8,6 +8,7 @@ import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -73,5 +74,48 @@ public record UserDTO(
 
 	public static UserDTO createSampleMaleUser(AddressDTO addressDTO, PhoneNumberDTO phoneNumberDTO){
 		return new UserDTO(1L, "Luiz Inacio", "da Silva", LocalDate.of(1972, Month.FEBRUARY, 22), "123.456.789-10", "lula@prov.com", addressDTO, Set.of(phoneNumberDTO));
+	}
+
+	public static UserDTO exampleComplete() {
+		AddressDTO addressDTO = new AddressDTO(
+				1L,
+				"123 Main St",
+				"Apt 4B",
+				"New York",
+				"NY",
+				"10001",
+				null,
+				null
+		);
+
+
+		Set<PhoneNumberDTO> phonesDTO = new HashSet<>();
+		phonesDTO.add(new PhoneNumberDTO(
+				1L,
+				"Mobile",
+				"123-456-7890",
+				null
+		));
+		phonesDTO.add(new PhoneNumberDTO(
+				2L,
+				"Home",
+				"987-654-3210",
+				null
+		));
+
+
+		UserDTO userDTO = new UserDTO(
+				1L,
+				"John",
+				"Doe",
+				LocalDate.of(1985, 5, 15),
+				"12345678901",
+				"john.doe@example.com",
+				addressDTO,
+				phonesDTO
+		);
+
+
+		return userDTO;
 	}
 }

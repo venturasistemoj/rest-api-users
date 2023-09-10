@@ -8,11 +8,9 @@ import java.time.Month;
 import java.util.List;
 import java.util.Set;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -62,7 +60,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-@Transactional
+@AutoConfigureMockMvc
 class SpringRestApiTests {
 
 	// System APIs base URLs.
@@ -120,13 +118,17 @@ class SpringRestApiTests {
 	 * @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 	 */
 
+	public void testCreateNewAddress() {
+
+	}
+
 	/**
 	 * Sends a POST request to the user's API URL with the user in the request body.
 	 * Checks response status and returned user data with helper method.
 	 * @throws NotFoundException
 	 */
 	@Test
-	public void createUserTest() throws NotFoundException {
+	public void testUserWasCreatedSuccessfully() throws NotFoundException {
 
 		userService.deleteUser(userTest.userId());
 

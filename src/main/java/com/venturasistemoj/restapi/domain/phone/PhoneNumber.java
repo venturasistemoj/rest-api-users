@@ -5,13 +5,7 @@ import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.venturasistemoj.restapi.domain.user.User;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
@@ -35,7 +29,7 @@ public class PhoneNumber {
 
 	private String type;
 
-	@Pattern(regexp = PHONE_REGEXP, message = PHONE_MESSAGE)
+	//@Pattern(regexp = PHONE_REGEXP, message = PHONE_MESSAGE)
 	@NotNull private String number;
 
 	/**
@@ -43,9 +37,8 @@ public class PhoneNumber {
 	 * <code>@JoinColumn</code> especifica a coluna na tabela <code>phones</code> que armazena a chave estrangeira
 	 * para a tabela <code>users</code>.
 	 */
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id") // foreign key
-	@JsonBackReference
 	private User user;
 
 	@Override

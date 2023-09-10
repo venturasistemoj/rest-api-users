@@ -4,32 +4,46 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1638363a-87da-406b-b7a5-e951c841462d" name="Changes" comment="Retirando lombok e trocando classes DTO para record.">
+    <list default="true" id="1638363a-87da-406b-b7a5-e951c841462d" name="Changes" comment="Corrigindo testes de integração">
+      <change afterPath="$PROJECT_DIR$/src/main/resources/logback-spring.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/com/venturasistemoj/restapi/integrationtests/AddressControllerIntegrationTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/com/venturasistemoj/restapi/integrationtests/UserControllerIntegrationTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/venturasistemoj/restapi/domain/phone/PhoneController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/venturasistemoj/restapi/domain/phone/PhoneController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/venturasistemoj/restapi/domain/phone/PhoneMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/venturasistemoj/restapi/domain/phone/PhoneMapper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/venturasistemoj/restapi/domain/phone/PhoneNumberDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/venturasistemoj/restapi/domain/phone/PhoneNumberDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/venturasistemoj/restapi/domain/phone/PhoneServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/venturasistemoj/restapi/domain/phone/PhoneServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/venturasistemoj/restapi/domain/address/Address.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/venturasistemoj/restapi/domain/address/Address.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/venturasistemoj/restapi/domain/phone/PhoneNumber.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/venturasistemoj/restapi/domain/phone/PhoneNumber.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/venturasistemoj/restapi/domain/user/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/venturasistemoj/restapi/domain/user/User.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/venturasistemoj/restapi/domain/user/UserDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/venturasistemoj/restapi/domain/user/UserDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/venturasistemoj/restapi/domain/user/UserMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/venturasistemoj/restapi/domain/user/UserMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/venturasistemoj/restapi/domain/user/UserServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/venturasistemoj/restapi/domain/user/UserServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/test/java/com/venturasistemoj/restapi/integrationtests/SpringRestApiTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/venturasistemoj/restapi/integrationtests/SpringRestApiTests.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/application.properties" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/generated-sources/annotations/com/venturasistemoj/restapi/domain/address/AddressMapperImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/target/generated-sources/annotations/com/venturasistemoj/restapi/domain/address/AddressMapperImpl.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/generated-sources/annotations/com/venturasistemoj/restapi/domain/phone/PhoneMapperImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/target/generated-sources/annotations/com/venturasistemoj/restapi/domain/phone/PhoneMapperImpl.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/generated-sources/annotations/com/venturasistemoj/restapi/domain/user/UserMapperImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/target/generated-sources/annotations/com/venturasistemoj/restapi/domain/user/UserMapperImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/surefire-reports/2023-09-03T16-52-39_417.dumpstream" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/surefire-reports/TEST-com.venturasistemoj.restapi.integrationtests.SpringRestApiTests.xml" beforeDir="false" afterPath="$PROJECT_DIR$/target/surefire-reports/TEST-com.venturasistemoj.restapi.integrationtests.SpringRestApiTests.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/surefire-reports/TEST-com.venturasistemoj.restapi.unitests.JUnitAddressTests.xml" beforeDir="false" afterPath="$PROJECT_DIR$/target/surefire-reports/TEST-com.venturasistemoj.restapi.unitests.JUnitAddressTests.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/surefire-reports/TEST-com.venturasistemoj.restapi.unitests.JUnitPhoneTests.xml" beforeDir="false" afterPath="$PROJECT_DIR$/target/surefire-reports/TEST-com.venturasistemoj.restapi.unitests.JUnitPhoneTests.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/surefire-reports/TEST-com.venturasistemoj.restapi.unitests.JUnitUserTests.xml" beforeDir="false" afterPath="$PROJECT_DIR$/target/surefire-reports/TEST-com.venturasistemoj.restapi.unitests.JUnitUserTests.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/surefire-reports/com.venturasistemoj.restapi.integrationtests.SpringRestApiTests.txt" beforeDir="false" afterPath="$PROJECT_DIR$/target/surefire-reports/com.venturasistemoj.restapi.integrationtests.SpringRestApiTests.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/surefire-reports/com.venturasistemoj.restapi.unitests.JUnitAddressTests.txt" beforeDir="false" afterPath="$PROJECT_DIR$/target/surefire-reports/com.venturasistemoj.restapi.unitests.JUnitAddressTests.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/surefire-reports/com.venturasistemoj.restapi.unitests.JUnitPhoneTests.txt" beforeDir="false" afterPath="$PROJECT_DIR$/target/surefire-reports/com.venturasistemoj.restapi.unitests.JUnitPhoneTests.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/surefire-reports/com.venturasistemoj.restapi.unitests.JUnitUserTests.txt" beforeDir="false" afterPath="$PROJECT_DIR$/target/surefire-reports/com.venturasistemoj.restapi.unitests.JUnitUserTests.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/testCompile/default-testCompile/createdFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/testCompile/default-testCompile/createdFiles.lst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/testCompile/default-testCompile/inputFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/testCompile/default-testCompile/inputFiles.lst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/surefire-reports/TEST-com.venturasistemoj.restapi.integrationtests.SpringRestApiTests.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/surefire-reports/TEST-com.venturasistemoj.restapi.unitests.JUnitAddressTests.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/surefire-reports/TEST-com.venturasistemoj.restapi.unitests.JUnitPhoneTests.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/surefire-reports/TEST-com.venturasistemoj.restapi.unitests.JUnitUserTests.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/surefire-reports/com.venturasistemoj.restapi.integrationtests.SpringRestApiTests.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/surefire-reports/com.venturasistemoj.restapi.unitests.JUnitAddressTests.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/surefire-reports/com.venturasistemoj.restapi.unitests.JUnitPhoneTests.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/surefire-reports/com.venturasistemoj.restapi.unitests.JUnitUserTests.txt" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
@@ -48,6 +62,9 @@
       </UrlAndAccount>
     </option>
   </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
   <component name="MavenImportPreferences">
     <option name="generalSettings">
       <MavenGeneralSettings>
@@ -55,19 +72,86 @@
       </MavenGeneralSettings>
     </option>
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "node.js.selected.package.tslint": "(autodetect)"
+  <component name="MavenRunner">
+    <option name="skipTests" value="true" />
+  </component>
+  <component name="ProjectId" id="2UuCzASecunz1CdLQcTGjJpmGZv" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
+    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
+    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
+    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;last_opened_file_path&quot;: &quot;E:/Projetos/rest-api-users&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;spring.configuration.checksum&quot;: &quot;1d9ddd56403cb54aecb11fb26fd7851e&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  },
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;h2&quot;
+    ]
   }
-}]]></component>
+}</component>
+  <component name="RecentsManager">
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="com.venturasistemoj.restapi.integrationtests" />
+    </key>
+  </component>
   <component name="RunAnythingCache">
     <option name="myCommands">
       <command value="mvn clean install" />
+      <command value="mvn spring-boot:run -DskipTests" />
+      <command value="mvn clean install -DskipTests" />
     </option>
   </component>
-  <component name="RunManager" selected="JUnit.SpringRestApiTests.getUserPhonesTest">
+  <component name="RunManager" selected="Spring Boot.RestApiApplication">
+    <configuration name="AddressControllerIntegrationTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="rest-api" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.venturasistemoj.restapi.integrationtests.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="com.venturasistemoj.restapi.integrationtests" />
+      <option name="MAIN_CLASS_NAME" value="com.venturasistemoj.restapi.integrationtests.AddressControllerIntegrationTest" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="AddressControllerIntegrationTest.testCreateAddress" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="rest-api" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.venturasistemoj.restapi.integrationtests.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="com.venturasistemoj.restapi.integrationtests" />
+      <option name="MAIN_CLASS_NAME" value="com.venturasistemoj.restapi.integrationtests.AddressControllerIntegrationTest" />
+      <option name="METHOD_NAME" value="testCreateAddress" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="SpringRestApiTests" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="rest-api" />
       <extension name="coverage">
@@ -83,7 +167,7 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="SpringRestApiTests.getAdressesTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="UserControllerIntegrationTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="rest-api" />
       <extension name="coverage">
         <pattern>
@@ -92,14 +176,13 @@
         </pattern>
       </extension>
       <option name="PACKAGE_NAME" value="com.venturasistemoj.restapi.integrationtests" />
-      <option name="MAIN_CLASS_NAME" value="com.venturasistemoj.restapi.integrationtests.SpringRestApiTests" />
-      <option name="METHOD_NAME" value="getAdressesTest" />
-      <option name="TEST_OBJECT" value="method" />
+      <option name="MAIN_CLASS_NAME" value="com.venturasistemoj.restapi.integrationtests.UserControllerIntegrationTest" />
+      <option name="TEST_OBJECT" value="class" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="SpringRestApiTests.getPhonesTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="UserControllerIntegrationTest.testCreateUser" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="rest-api" />
       <extension name="coverage">
         <pattern>
@@ -108,40 +191,8 @@
         </pattern>
       </extension>
       <option name="PACKAGE_NAME" value="com.venturasistemoj.restapi.integrationtests" />
-      <option name="MAIN_CLASS_NAME" value="com.venturasistemoj.restapi.integrationtests.SpringRestApiTests" />
-      <option name="METHOD_NAME" value="getPhonesTest" />
-      <option name="TEST_OBJECT" value="method" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="SpringRestApiTests.getUserPhonesTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="rest-api" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="com.venturasistemoj.restapi.integrationtests.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="com.venturasistemoj.restapi.integrationtests" />
-      <option name="MAIN_CLASS_NAME" value="com.venturasistemoj.restapi.integrationtests.SpringRestApiTests" />
-      <option name="METHOD_NAME" value="getUserPhonesTest" />
-      <option name="TEST_OBJECT" value="method" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="SpringRestApiTests.getUsersTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="rest-api" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="com.venturasistemoj.restapi.integrationtests.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="com.venturasistemoj.restapi.integrationtests" />
-      <option name="MAIN_CLASS_NAME" value="com.venturasistemoj.restapi.integrationtests.SpringRestApiTests" />
-      <option name="METHOD_NAME" value="getUsersTest" />
+      <option name="MAIN_CLASS_NAME" value="com.venturasistemoj.restapi.integrationtests.UserControllerIntegrationTest" />
+      <option name="METHOD_NAME" value="testCreateUser" />
       <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -158,6 +209,33 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration name="rest-api [mvn,spring-boot:run...]" type="MavenRunConfiguration" factoryName="Maven" nameIsGenerated="true">
+      <MavenSettings>
+        <option name="myGeneralSettings" />
+        <option name="myRunnerSettings" />
+        <option name="myRunnerParameters">
+          <MavenRunnerParameters>
+            <option name="profiles">
+              <set />
+            </option>
+            <option name="goals">
+              <list>
+                <option value="mvn" />
+                <option value="spring-boot:run" />
+                <option value="-DskipTests" />
+              </list>
+            </option>
+            <option name="pomFileName" />
+            <option name="profilesMap">
+              <map />
+            </option>
+            <option name="resolveToWorkspace" value="false" />
+            <option name="workingDirPath" value="$PROJECT_DIR$" />
+          </MavenRunnerParameters>
+        </option>
+      </MavenSettings>
+      <method v="2" />
+    </configuration>
     <configuration name="RestApiApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
       <module name="rest-api" />
       <option name="SPRING_BOOT_MAIN_CLASS" value="com.venturasistemoj.restapi.RestApiApplication" />
@@ -165,16 +243,26 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <list>
+      <item itemvalue="JUnit.AddressControllerIntegrationTest" />
+      <item itemvalue="JUnit.AddressControllerIntegrationTest.testCreateAddress" />
+      <item itemvalue="JUnit.SpringRestApiTests" />
+      <item itemvalue="JUnit.UserControllerIntegrationTest" />
+      <item itemvalue="JUnit.UserControllerIntegrationTest.testCreateUser" />
+      <item itemvalue="Maven.rest-api [mvn,spring-boot:run...]" />
+      <item itemvalue="Spring Boot.RestApiApplication" />
+    </list>
     <recent_temporary>
       <list>
-        <item itemvalue="JUnit.SpringRestApiTests.getUserPhonesTest" />
+        <item itemvalue="JUnit.UserControllerIntegrationTest.testCreateUser" />
+        <item itemvalue="JUnit.UserControllerIntegrationTest" />
+        <item itemvalue="JUnit.AddressControllerIntegrationTest.testCreateAddress" />
+        <item itemvalue="JUnit.AddressControllerIntegrationTest" />
         <item itemvalue="JUnit.SpringRestApiTests" />
-        <item itemvalue="JUnit.SpringRestApiTests.getPhonesTest" />
-        <item itemvalue="JUnit.SpringRestApiTests.getAdressesTest" />
-        <item itemvalue="JUnit.SpringRestApiTests.getUsersTest" />
       </list>
     </recent_temporary>
   </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task id="LOCAL-00001" summary="Retirando lombok e trocando classes DTO para record.">
       <created>1693771071374</created>
@@ -183,8 +271,29 @@
       <option name="project" value="LOCAL" />
       <updated>1693771071374</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="1638363a-87da-406b-b7a5-e951c841462d" name="Changes" comment="Retirando lombok e trocando classes DTO para record." />
+      <created>1693780344888</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1693780344888</updated>
+      <workItem from="1693780346158" duration="2270000" />
+      <workItem from="1693787957182" duration="1541000" />
+      <workItem from="1693924537242" duration="5154000" />
+      <workItem from="1694314595549" duration="1056000" />
+    </task>
+    <task id="LOCAL-00002" summary="Corrigindo testes de integração">
+      <created>1693780494065</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1693780494065</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">
@@ -199,7 +308,8 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Retirando lombok e trocando classes DTO para record." />
-    <option name="LAST_COMMIT_MESSAGE" value="Retirando lombok e trocando classes DTO para record." />
+    <MESSAGE value="Corrigindo testes de integração" />
+    <option name="LAST_COMMIT_MESSAGE" value="Corrigindo testes de integração" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -211,18 +321,58 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/test/java/com/venturasistemoj/restapi/integrationtests/SpringRestApiTests.java</url>
-          <line>220</line>
+          <line>222</line>
           <option name="timeStamp" value="12" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/test/java/com/venturasistemoj/restapi/integrationtests/SpringRestApiTests.java</url>
-          <line>224</line>
+          <line>226</line>
           <option name="timeStamp" value="20" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/test/java/com/venturasistemoj/restapi/integrationtests/SpringRestApiTests.java</url>
-          <line>289</line>
+          <line>291</line>
           <option name="timeStamp" value="22" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/test/java/com/venturasistemoj/restapi/integrationtests/AddressControllerIntegrationTest.java</url>
+          <line>76</line>
+          <option name="timeStamp" value="23" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/venturasistemoj/restapi/domain/address/AddressController.java</url>
+          <line>39</line>
+          <option name="timeStamp" value="25" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/venturasistemoj/restapi/domain/address/AddressServiceImpl.java</url>
+          <line>53</line>
+          <option name="timeStamp" value="26" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/venturasistemoj/restapi/domain/address/AddressServiceImpl.java</url>
+          <line>73</line>
+          <option name="timeStamp" value="28" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/test/java/com/venturasistemoj/restapi/integrationtests/UserControllerIntegrationTest.java</url>
+          <line>64</line>
+          <option name="timeStamp" value="29" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/venturasistemoj/restapi/domain/user/UserServiceImpl.java</url>
+          <line>48</line>
+          <option name="timeStamp" value="33" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/venturasistemoj/restapi/domain/address/AddressServiceImpl.java</url>
+          <line>145</line>
+          <option name="timeStamp" value="34" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/venturasistemoj/restapi/domain/user/UserMapper.java</url>
+          <line>39</line>
+          <option name="timeStamp" value="35" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

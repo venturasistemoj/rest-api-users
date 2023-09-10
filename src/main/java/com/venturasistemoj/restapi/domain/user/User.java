@@ -1,6 +1,7 @@
 package com.venturasistemoj.restapi.domain.user;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -54,12 +55,12 @@ public class User {
 	private LocalDate birthDate;
 
 	@NotNull
-	@Pattern(regexp = CPF_REGEXP, message = CPF_MESSAGE)
+	//@Pattern(regexp = CPF_REGEXP, message = CPF_MESSAGE)
 	@Column(unique = true)
 	private String cpf;
 
 	@NotNull
-	@Pattern(regexp = EMAIL_REGEXP, message = EMAIL_MESSAGE)
+	//@Pattern(regexp = EMAIL_REGEXP, message = EMAIL_MESSAGE)
 	private String email;
 
 
@@ -72,8 +73,7 @@ public class User {
 	 * propagadas para a entidade <code>Address/<code>.
 	 */
 	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL,orphanRemoval = true)
-	@JsonManagedReference
-	private Address address;
+	private Address address = new Address();
 
 	/**
 	 * <code>@OneToMany</code> indica um relacionamento um-para-muitos entre a entidade <code>User</code> e a entidade
@@ -81,9 +81,9 @@ public class User {
 	 * <code>user</code> (dona da relação) na classe <code>PhoneNumber</code>, isso significa que a tabela phones
 	 * possui uma coluna <code>user_id</code> que faz referência à chave primária da tabela users.
 	 */
-	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL,fetch = FetchType.EAGER,orphanRemoval = true)
-	@JsonManagedReference
-	private Set<PhoneNumber> phones;
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL,orphanRemoval = true)
+	@JoinColumn(name = "user_id")
+	private Set<PhoneNumber> phones = new HashSet<>();
 
 	/**
 	 * As anotações <code>@JsonManagedReference</code> e <code>@JsonBackReference</code>

@@ -37,7 +37,7 @@ public class Address {
 	@NotNull private String city;
 	@NotNull private String state;
 
-	@Pattern(regexp = ZIP_CODE_REGEXP, message = ZIP_CODE_MESSAGE)
+	//@Pattern(regexp = ZIP_CODE_REGEXP, message = ZIP_CODE_MESSAGE)
 	@NotNull private String zipCode;
 
 	/**
