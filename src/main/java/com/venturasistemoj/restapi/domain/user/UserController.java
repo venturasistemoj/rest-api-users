@@ -14,9 +14,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * [EN] Users API interface for coordinating requests and responses.
+ * Users API interface for coordinating requests and responses.
  *
- * [PT] Interface da API de usuários para coordenar requisições e respostas.
+ * The Spring <code>@RestController</code> annotation marks the class as a controller where each method returns
+ * a domain object instead of a view. It is a shortcut to include <code>@Controller</code> and
+ * <code>@ResponseBody/<code> Java annotations.
  *
  * @author Wilson Ventura
  * @since 2023
@@ -37,6 +39,8 @@ public class UserController {
 
 		try {
 			UserDTO savedUser = userService.createUser(userDTO);
+			// Spring RESTful web service controller populates and returns an object.
+			// The object data will be written directly to the HTTP response as JSON by embedded Jackson JSON.
 			return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
 		} catch (IllegalUserStateException e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());

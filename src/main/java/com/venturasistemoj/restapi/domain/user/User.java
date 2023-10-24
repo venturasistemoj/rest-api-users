@@ -33,7 +33,7 @@ import lombok.Data;
 @Data
 public class User {
 
-	// Sem dígito verificador
+	// No check digit
 	private static final String CPF_REGEXP = "^[\\d]{3}\\.?[\\d]{3}\\.?[\\d]{3}\\-?[\\d]{2}$";
 	private static final String CPF_MESSAGE = "CPF inválido!";
 
@@ -50,13 +50,9 @@ public class User {
 	@NotNull private String surName;
 
 	/**
-	 * [EN] The <code>JacksonConfig2</code> class configures custom serializers and deserializers at application-level
+	 * The <code>JacksonConfig</code> class configures custom serializers and deserializers at application-level
 	 * for the types <code>LocalDate, LocalTime and LocalDateTime</code> eliminating the need for <code>@JsonFormat</code>
 	 * annotation on each entity field of the application that needs it.
-	 *
-	 * [PT] A classe <code>JacksonConfig2</code> configura serializadores e desserializadores personalizados para os tipos
-	 * <code>LocalDate, LocalTime e LocalDateTime</code> em nível de aplicação eliminando a necessidade da anotação
-	 * <code>@JsonFormat</code> em cada campo de entidade da aplicação que precisar dela.
 	 */
 
 	//@JsonFormat(pattern = "dd/MM/yyyy")
@@ -74,33 +70,33 @@ public class User {
 
 
 	/**
-	 * <code>@OneToOne</code> indica um relacionamento um-para-um entre as entidades <code>User</code> e
-	 * <code>Address.</code> <code>mappedBy</code> indica que a propriedade <code>address</code> é mapeada por
-	 * <code>user</code> (dona da relação) na classe <code>Address</code>, isso significa que a tabela adresses
-	 * possui uma coluna <code>user_id</code> que faz referência à chave primária da tabela users.
-	 * <code>cascade</code> define que as operações de persistência realizadas na entidade <code>User</code> serão
-	 * propagadas para a entidade <code>Address/<code>.
+	 * <code>@OneToOne</code> indicates a one-to-one relationship between the <code>User</code> and
+	 * <code>Address</code>. <code>mappedBy</code> indicates that the <code>address</code> property is mapped by
+	 * <code>user</code> (owner of the relationship) in the <code>Address</code> class, this means that the addresses
+	 * table has a column <code>user_id</code> that references the primary key of the users table.
+	 * <code>cascade</code> defines that persistence operations performed on the <code>User</code> entity will be
+	 * propagated to the <code>Address/<code> entity.
 	 */
 	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
 	@JsonManagedReference
 	private Address address;
 
 	/**
-	 * <code>@OneToMany</code> indica um relacionamento um-para-muitos entre a entidade <code>User</code> e a entidade
-	 * <code>PhoneNumber</code>. <code>mappedBy/<code> especifica que a propriedade <code>phones</code> é mapeada por
-	 * <code>user</code> (dona da relação) na classe <code>PhoneNumber</code>, isso significa que a tabela phones
-	 * possui uma coluna <code>user_id</code> que faz referência à chave primária da tabela users.
+	 * <code>@OneToMany</code> indicates a one-to-many relationship between the <code>User</code> entity and the
+	 * <code>PhoneNumber</code>. <code>mappedBy/<code> specifies that the <code>phones</code> property is mapped by
+	 * <code>user</code> (owner of the relationship) in the <code>PhoneNumber</code> class, this means that the phones
+	 * table has a column <code>user_id</code> that references the primary key of the users table.
 	 */
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	@JsonManagedReference
 	private Set<PhoneNumber> phones;
 
 	/**
-	 * As anotações <code>@JsonManagedReference</code> e <code>@JsonBackReference</code>
-	 * (em <code>Address.user</code> e <code>PhoneNumber.user</code>) são da biblioteca Jackson, usada para a
-	 * serialização e desserialização de objetos Java para JSON. São utilizadas para tratar o relacionamento
-	 * bidirecional entre <code>User</code>, <code>PhoneNumber</code> e <code>Address</code> a fim de evitar o loop
-	 * infinito na serialização em JSON.
+	 * The <code>@JsonManagedReference</code> and <code>@JsonBackReference</code> annotations
+	 * (in <code>Address.user</code> and <code>PhoneNumber.user</code>) are from the Jackson library, used for
+	 * serialization and deserialization of Java objects to JSON. They are used to treat the bidirectional relationship
+	 * between <code>User</code>, <code>PhoneNumber</code> and <code>Address</code> in order to avoid infinite looping
+	 * in JSON serialization.
 	 */
 
 	@Override

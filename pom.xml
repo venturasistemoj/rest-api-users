@@ -5,7 +5,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/x
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.1.2</version>
+		<version>3.1.5</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 
@@ -19,15 +19,16 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/x
     	<org.mapstruct.version>1.5.5.Final</org.mapstruct.version> <!-- 2013 -->
     	<java.version>17</java.version>
 	</properties>
-
+	
 	<dependencies>
+		
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
-		<dependency>
+		<dependency> 
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
+			<artifactId>spring-boot-starter-web</artifactId> <!--  Jackson JSON  -->
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -57,10 +58,27 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/x
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-	        <groupId>org.mapstruct</groupId>
-	        <artifactId>mapstruct</artifactId>
-	        <version>${org.mapstruct.version}</version>
+			<groupId>org.mapstruct</groupId>
+			<artifactId>mapstruct</artifactId>
+			<version>${org.mapstruct.version}</version>
     	</dependency>
+    	
+    	<!-- oldest
+		   <artifactId>springfox-swagger2</artifactId>
+		   <artifactId>springfox-swagger-ui</artifactId>
+		-->
+		
+		<!-- older
+		   <artifactId>springfox-boot-starter</artifactId>
+		-->
+		
+		<!-- New (SwaggerIO included) -->
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+			<version>2.2.0</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>
@@ -79,9 +97,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/x
 				</configuration>
 			</plugin>
 			
-			<!-- A configuração do mapstruct-processor no plugin maven-compiler-plugin habilita a 
-			geração automática das implementações dos mapeadores durante a compilação do projeto. --> 
-			
+			<!-- Enables automatic generation of mapper implementations during project compilation. --> 
 			<plugin>
 	            <groupId>org.apache.maven.plugins</groupId>
 	            <artifactId>maven-compiler-plugin</artifactId>

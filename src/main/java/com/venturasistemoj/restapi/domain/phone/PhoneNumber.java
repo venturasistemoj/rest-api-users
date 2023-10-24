@@ -41,9 +41,9 @@ public class PhoneNumber {
 	@NotNull private String number;
 
 	/**
-	 * <code>@ManyToOne</code> indica um relacionamento muitos-para-um com a entidade <code>User</code>.
-	 * <code>@JoinColumn</code> especifica a coluna na tabela <code>phones</code> que armazena a chave estrangeira
-	 * para a tabela <code>users</code>.
+	 * <code>@ManyToOne</code> indicates a many-to-one relationship with the <code>User</code> entity.
+	 * <code>@JoinColumn</code> specifies the column in the <code>phones</code> table that stores the foreign key
+	 * for the <code>users</code> table.
 	 */
 	@ManyToOne
 	@JoinColumn(name = "user_id") // foreign key

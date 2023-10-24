@@ -43,9 +43,9 @@ public class Address {
 	@NotNull private String zipCode;
 
 	/**
-	 * <code>@OneToOne</code> indica a relação de um-para-um com a classe <code>User</code>.
-	 * <code>@JoinColumn(name = "user_id")</code> especifica a coluna na tabela <code>adresses/<code> usada como chave
-	 * estrangeira para mapear a relação.
+	 * <code>@OneToOne</code> indicates the one-to-one relationship with the <code>User</code> class.
+	 * <code>@JoinColumn(name = "user_id")</code> specifies the column in the <code>addresses/<code> table used as the
+	 * foreign key to map the relationship.
 	 */
 	@OneToOne
 	@JoinColumn(name = "user_id") // foreign key
