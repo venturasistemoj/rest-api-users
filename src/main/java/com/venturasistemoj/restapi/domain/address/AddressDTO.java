@@ -10,11 +10,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * [EN] Address data transfer class
- * [PT] Classe de tranferência de dados de endereço.
+ * Address data transfer class.
  *
  * @author Wilson Ventura
- * @since 2023
  */
 
 @Data

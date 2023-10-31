@@ -4,18 +4,16 @@ import java.util.List;
 
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 
+import com.venturasistemoj.restapi.exceptions.IllegalUserStateException;
+
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 
 /**
- * [EN] Service interface to user business logic.
- *
- * [PT] Interface de serviços para lógica de negócios de usuários.
+ * Service interface to user business logic.
  *
  * @author Wilson Ventura
- * @since 2023
  */
-
 public interface UserService {
 
 	UserDTO createUser(@Valid UserDTO userDTO) throws IllegalArgumentException, IllegalUserStateException;

@@ -15,11 +15,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * [EN] User data transfer class
- * [PT] Classe de tranferência de dados de usuário.
+ * User data transfer class.
  *
  * @author Wilson Ventura
- * @since 2023
  */
 
 @Data

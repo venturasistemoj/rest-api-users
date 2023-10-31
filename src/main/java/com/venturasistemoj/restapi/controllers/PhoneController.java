@@ -1,4 +1,4 @@
-package com.venturasistemoj.restapi.domain.phone;
+package com.venturasistemoj.restapi.controllers;
 
 import java.util.Set;
 
@@ -15,13 +15,18 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.venturasistemoj.restapi.domain.phone.PhoneNumberDTO;
+import com.venturasistemoj.restapi.domain.phone.PhoneService;
+import com.venturasistemoj.restapi.exceptions.IllegalPhoneStateException;
+
 /**
- * [EN] Phone Numbers API interface for coordinating requests and responses.
+ * Phone Numbers API interface for coordinating requests and responses.
  *
- * [PT] Interface da API de telefones para coordenar requisições e respostas.
+ * <p>The Spring <code>@RestController</code> annotation marks the class as a controller where each method returns
+ * a domain object instead of a view. It is a shortcut to include <code>@Controller</code> and
+ * <code>@ResponseBody/<code> Java annotations.</p>
  *
  * @author Wilson Ventura
- * @since 2023
  */
 
 @RestController
@@ -31,16 +36,17 @@ public class PhoneController {
 	@Autowired
 	private PhoneService phoneService;
 
-	private static final String BAD_PHONE = "Dados do telefone incorretos ou duplicados!";
-	private static final String NOT_FOUND = "Usuário ou telefone(s) inexistente!";
+	private static final String NOT_FOUND = "Nonexistent user or phone number!";
 
 	@PostMapping("/{userId}")
 	public ResponseEntity<?> createPhoneNumber(@PathVariable Long userId, @RequestBody PhoneNumberDTO phoneDTO) {
 
 		try {
 			PhoneNumberDTO savedPhoneNumber = phoneService.createPhoneNumber(userId, phoneDTO);
+			// Spring RESTful web service controller populates and returns an object.
+			// The object data will be written directly to the HTTP response as JSON by embedded Jackson JSON.
 			return ResponseEntity.status(HttpStatus.CREATED).body(savedPhoneNumber);
-		} catch (IllegalPhoneStateException | IllegalStateException e) {
+		} catch (IllegalPhoneStateException e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 		} catch (NotFoundException e) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(NOT_FOUND);
@@ -88,8 +94,8 @@ public class PhoneController {
 			return ResponseEntity.noContent().build();
 		} catch (NotFoundException e) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(NOT_FOUND);
-		} catch (IllegalPhoneStateException e) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(BAD_PHONE);
+		}  catch (IllegalPhoneStateException e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 		}
 	}
 

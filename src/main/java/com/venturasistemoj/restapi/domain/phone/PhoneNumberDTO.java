@@ -10,11 +10,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * [EN] Phone number data transfer class.
- * [PT] Classe de tranferência de dados de telefone.
+ * Phone number data transfer class.
  *
  * @author Wilson Ventura
- * @since 2023
  */
 
 @Data
@@ -24,7 +22,7 @@ import lombok.NoArgsConstructor;
 public class PhoneNumberDTO {
 
 	@NotNull private Long phoneId;
-	private String type;
+	@NotNull private String type;
 	@NotNull private String number;
 
 	@JsonBackReference

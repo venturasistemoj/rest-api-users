@@ -10,7 +10,10 @@ import java.util.Set;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -21,49 +24,68 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.venturasistemoj.restapi.domain.address.AddressDTO;
 import com.venturasistemoj.restapi.domain.address.AddressService;
-import com.venturasistemoj.restapi.domain.address.IllegalAddressStateException;
-import com.venturasistemoj.restapi.domain.phone.IllegalPhoneStateException;
 import com.venturasistemoj.restapi.domain.phone.PhoneNumberDTO;
 import com.venturasistemoj.restapi.domain.phone.PhoneService;
 import com.venturasistemoj.restapi.domain.user.UserDTO;
 import com.venturasistemoj.restapi.domain.user.UserService;
+import com.venturasistemoj.restapi.exceptions.IllegalAddressStateException;
+import com.venturasistemoj.restapi.exceptions.IllegalOperationException;
+import com.venturasistemoj.restapi.exceptions.IllegalPhoneStateException;
+import com.venturasistemoj.restapi.exceptions.IllegalUserStateException;
 
 /**
- * Integration test class for management of a RESTful API.
+ * <h2>Class of integration tests for managing <code>user</code>, <code>addresses</code> and <code>phones</code> RESTful APIs.</h2>
  *
- * The <code>@SpringBootTest</code> annotation can be specified in a test class that runs Spring Boot based tests.
- * It loads the entire context of the application, including components, services, controllers and the database.
- * In addition to the regular Spring TestContextFramework, it provides support for different web environment modes,
- * including the ability to start a running web server listening on a defined or random port, among others.
- * It can register the following beans for web tests that are using a running web server:
- * • <code>TestRestTemplate</code>
- * • <code>WebTestClient</code>
- * • <code>HttpGraphQlTester</code>
+ * <p>The <code>@SpringBootTest</code> annotation loads the entire context of the application, including components,
+ * services, controllers and the database.
+ * <p>In addition to the regular Spring <code>TestContextFramework</code>, it provides support for different web
+ * environment modes, including the ability to start a running web server listening on a defined or random port, among
+ * others.
  *
- * <code>TestRestTemplate</code> provides a more realistic way to test HTTP requests. It starts an embedded server and
- * makes real HTTP calls to the running API. Allows us to test the integration between various system components,
+ * <p>It can register the following beans for web tests that are using a running web server:
+ * <ul>
+ * <li><code>TestRestTemplate</code>
+ * <li><code>WebTestClient</code>
+ * <li><code>HttpGraphQlTester</code>
+ * </ul>
+ *
+ * <p><code>TestRestTemplate</code> provides a more realistic way to test HTTP requests. It starts an embedded server
+ * and makes real HTTP calls to the running API. Allows us to test the integration between various system components,
  * including controllers, service layer and persistence layer. Using <code>TestRestTemplate</code> is more suitable
- * for integration tests that span multiple layers of the system.
+ * for integration tests that span multiple layers of the system.</p>
  *
- * JUnit 5, by default, runs test methods in random order to avoid dependencies and ensure that tests are isolated.
+ * <p>The <code>@Transactional</code> annotation describes a transaction attribute on an individual method or on a class.
+ * When this annotation is declared at the class level, it applies as a default to all methods of the declaring class
+ * and its subclasses.
+ * <p>If no custom rollback rules are configured in this annotation, the transaction will roll back on
+ *
+ * <p>JUnit 5, by default, runs test methods in random order to avoid dependencies and ensure that tests are isolated.
  * This is done to prevent the execution order of tests from affecting their results. <code>@TestMethodOrder</code> is
- * a type annotation used to configure a MethodOrderer for methods annotated with <code>@Test</code>.
- *
- * The <code>@Transactional</code> annotation ensures that each test runs in a separate transaction and that
- * changes are rolled back after the test completes.
+ * a type annotation used to configure a MethodOrderer for methods annotated with <code>@Test</code>.</p>
+ * <p>If <code>@TestMethodOrder</code> is not explicitly declared on a test class, inherited from a parent class, or
+ * declared on a test interface implemented by a test class, test methods will be ordered using a default algorithm
+ * that is deterministic but intentionally nonobvious.
+ * <p>JUnit 5 <code>@Order</code> annotation is used to configure the order in which the annotated element (i.e.,
+ * field, method, or class) should be evaluated or executed relative to other elements of the same category.
+ * When used with <code>MethodOrderer.OrderAnnotation</code>, the category applies to <code>@Test</code> methods.
+ * <p>Since this system has a business rule that imposes the need to register a user before creating an address or
+ * telephone number, the <code>createUserTest</code> method must be executed before all others and the
+ * <code>deleteUserTest</code> method must be executed as a final test method. So they are annotated with
+ * <code>@Order</code>.
  *
  * @author Wilson Ventura
- * @since 2023
  */
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-//@Transactional
+@Transactional
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class SpringRestApiTests {
 
-	// System APIs base URLs.
+	// Base URLs of system APIs.
 	private final String USERS_API_URL = "/rest-api/users";
 	private final String ADRESSES_API_URL = "/rest-api/adresses";
 	private final String PHONES_API_URL = "/rest-api/phones";
@@ -71,7 +93,7 @@ class SpringRestApiTests {
 	// Starts an embedded server and makes real HTTP calls to the running API.
 	@Autowired private TestRestTemplate restTemplate;
 
-	// User API service.
+	// API services.
 	@Autowired private UserService userService;
 	@Autowired private AddressService addressService;
 	@Autowired private PhoneService phoneService;
@@ -79,19 +101,16 @@ class SpringRestApiTests {
 	private UserDTO userTest;
 	private AddressDTO addressTest;
 	private PhoneNumberDTO phoneTest;
+	private static final Long TEST_ID = 1L;
 
 	/**
-	 * Initial teste setup. <code>@BeforeEach</code> is executed before EACH method annotated with <code>@Test</code>.
-	 * This prevents one test from affecting the state of another.
-	 * @throws NotFoundException
-	 * @throws IllegalStateException
-	 * @throws IllegalAddressStateException
+	 * <bold>Initial configuration performed before EACH <code>@Test</code> method.</bold>
 	 */
 	@BeforeEach
-	public void beforeSetUp() throws IllegalAddressStateException, IllegalStateException, NotFoundException {
+	public void beforeTestMethods() {
 
 		userTest = UserDTO.builder()
-				.userId(1L)
+				.userId(TEST_ID)
 				.name("Luiz Inacio")
 				.surName("da Silva")
 				.birthDate(LocalDate.of(1972, Month.FEBRUARY, 22))
@@ -100,67 +119,46 @@ class SpringRestApiTests {
 				.build();
 
 		addressTest = AddressDTO.builder()
-				.addressId(1L)
+				.addressId(TEST_ID)
 				.publicPlace("Avenida")
 				.streetAddress("Glasshouse, 69")
 				.complement("1001")
 				.city("Rio 40º")
 				.state("RJ")
 				.zipCode("69.069-069")
+				.userDTO(userTest)
 				.build();
-
-		//addressTest.setUserDTO(userTest);
-		//userTest.setAddressDTO(addressTest);
 
 		phoneTest = PhoneNumberDTO.builder()
-				.phoneId(1L)
+				.phoneId(TEST_ID)
 				.type("Cel")
 				.number("(21) 96687-8776")
+				.userDTO(userTest)
 				.build();
-
-		//phoneTest.setUserDTO(userTest);
-		//Set<PhoneNumberDTO> phones = new HashSet<>();
-		//phones.add(phoneTest);
-		//userTest.setPhonesDTO(phones);
-
-		userService.createUser(userTest);
-		//addressService.createAddress(userTest.getUserId(), addressTest);
-		//phoneService.createPhoneNumber(userTest.getUserId(), phoneTest);
-	}
-
-	@AfterEach
-	public void afterSetUp() throws NotFoundException {
-		//userService.deleteUser(userTest.getUserId());
-		//addressService.deleteAddress(userTest.getUserId());
-		//phoneService.deletePhoneNumber(userTest.getUserId(), phoneTest);
 	}
 
 	/**
-	 * The <code>@DirtiesContext</code> annotation indicates that the <code>ApplicationContext</code> associated with
-	 * the test is dirty and will be closed and removed from the context cache.
-	 * This annotation is used if a test has modified the context — e.g. modifying the state of a singleton bean,
-	 * an embedded database, etc. Subsequent tests that request the same context will be given a new context.
-	 * <code>@DirtiesContext</code> can be used at class level and at method level within the same class or class
-	 * hierarchy. In these scenarios, the <code>ApplicationContext</code> will be marked dirty before or after any
-	 * annotated methods, as well as before or after the current test class, depending on the configured
-	 * <code>methodMode</code> and <code>classMode</code>.
-	 *
-	 * @DirtiesContext(methodMode = MethodMode.BEFORE_METHOD)
-	 * @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
+	 * <bold>Final configuration performed after EACH <code>@Test</code> method.</bold>
+	 * @throws <code>NotFoundException</code>
 	 */
+	@AfterEach
+	public void afterTestMethods() {
+		// ...
+
+	}
 
 	/**
 	 * Sends a POST request to the user's API URL with the user in the request body.
 	 * Checks response status and returned user data with helper method.
 	 * @throws NotFoundException
+	 * @throws <code>IllegalUserStateException</code>
+	 * @throws <code>IllegalArgumentException</code>
 	 */
 	@Test
-	public void createUserTest() throws NotFoundException {
+	@Order(1)
+	public void createUserTest() throws IllegalUserStateException, IllegalArgumentException, NotFoundException {
 
-		userService.deleteUser(userTest.getUserId());
-
-		ResponseEntity<UserDTO> response = restTemplate.postForEntity(
-				USERS_API_URL, userTest, UserDTO.class);
+		ResponseEntity<UserDTO> response = restTemplate.postForEntity(USERS_API_URL, userTest, UserDTO.class);
 
 		assertEquals(HttpStatus.CREATED, response.getStatusCode());
 		assertNotNull(response.getBody().getUserId());
@@ -168,17 +166,17 @@ class SpringRestApiTests {
 	}
 
 	/**
-	 * Sends a POST request to the address's API URL with the user ID in the path variable.
-	 * Checks the response status and returned address data with helper method.
-	 * @throws NotFoundException
+	 * <p>Sends a POST request to the adresses's API URL with the user ID in the path variable and the address in the request body.
+	 * <p>Checks the response status and returned address data with helper method.
+	 * @throws <code>NotFoundException</code>
+	 * @throws <code>IllegalAddressStateException</code>
+	 * @throws <code>IllegalOperationException</code>
 	 */
 	@Test
-	public void createAddressTest() throws NotFoundException {
+	@Order(2)
+	public void createAddressTest() throws NotFoundException, IllegalAddressStateException, IllegalOperationException {
 
-		//addressService.deleteAddress(userTest.getUserId());
-
-		ResponseEntity<AddressDTO> response = restTemplate.postForEntity(
-				ADRESSES_API_URL + userTest.getUserId(), addressTest, AddressDTO.class);
+		ResponseEntity<AddressDTO> response = restTemplate.postForEntity(ADRESSES_API_URL + TEST_ID, addressTest, AddressDTO.class);
 
 		assertEquals(HttpStatus.CREATED, response.getStatusCode());
 		assertNotNull(response.getBody().getAddressId());
@@ -186,18 +184,18 @@ class SpringRestApiTests {
 	}
 
 	/**
-	 * Sends a POST request to the phone's API URL with the user ID in the path variable.
-	 * Checks the response status and returned phone number data with helper method.
-	 * @throws NotFoundException
-	 * @throws IllegalPhoneStateException
+	 * <p>Sends a POST request to the phone's API URL with the user ID in the path variable and the phone number in the request body.
+	 * <p>Checks the response status and returned phone number data with helper method.
+	 * @throws <code>NotFoundException</code>
+	 * @throws <code>IllegalPhoneStateException</code>
 	 */
 	@Test
-	public void createPhoneTest() throws IllegalPhoneStateException, NotFoundException {
+	@Order(3)
+	public void createPhoneTest() throws NotFoundException, IllegalPhoneStateException {
 
-		//phoneService.deletePhoneNumber(userTest.getUserId(), phoneTest);
+		System.err.println(userTest.getEmail());
 
-		ResponseEntity<PhoneNumberDTO> response = restTemplate.postForEntity(
-				PHONES_API_URL + userTest.getUserId(), phoneTest, PhoneNumberDTO.class);
+		ResponseEntity<PhoneNumberDTO> response = restTemplate.postForEntity(PHONES_API_URL + TEST_ID, phoneTest, PhoneNumberDTO.class);
 
 		assertEquals(HttpStatus.CREATED, response.getStatusCode());
 		assertNotNull(response.getBody().getPhoneId());
@@ -211,8 +209,7 @@ class SpringRestApiTests {
 	@Test
 	public void getUserTest() {
 
-		ResponseEntity<UserDTO> response = restTemplate.getForEntity(
-				USERS_API_URL + userTest.getUserId(), UserDTO.class);
+		ResponseEntity<UserDTO> response = restTemplate.getForEntity(USERS_API_URL + TEST_ID, UserDTO.class);
 
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 		assertUser(response);
@@ -221,17 +218,11 @@ class SpringRestApiTests {
 	/**
 	 * Sends a GET request for the user address with the user ID in the path variable.
 	 * Checks the response status and returned user data with helper method.
-	 * @throws NotFoundException
-	 * @throws IllegalStateException
-	 * @throws IllegalAddressStateException
 	 */
 	@Test
-	public void getUserAddressTest() throws IllegalAddressStateException, IllegalStateException, NotFoundException {
+	public void getUserAddressTest() {
 
-		addressService.createAddress(userTest.getUserId(), addressTest);
-
-		ResponseEntity<AddressDTO> response = restTemplate.getForEntity(
-				ADRESSES_API_URL + userTest.getUserId(), AddressDTO.class);
+		ResponseEntity<AddressDTO> response = restTemplate.getForEntity(ADRESSES_API_URL + TEST_ID, AddressDTO.class);
 
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 		assertAddress(response);
@@ -240,19 +231,13 @@ class SpringRestApiTests {
 	/**
 	 * Sends a GET request for the user phone numbers with the user ID in the path variable.
 	 * Checks the response status and returned user data with helper method.
-	 * @throws NotFoundException
-	 * @throws IllegalPhoneStateException
-	 * @throws IllegalStateException
 	 */
 	@Test
-	public void getUserPhonesTest() throws IllegalStateException, IllegalPhoneStateException, NotFoundException {
+	public void getUserPhonesTest() {
 
-		phoneService.createPhoneNumber(userTest.getUserId(), phoneTest);
-
-		ResponseEntity<Set<PhoneNumberDTO>> response = restTemplate.exchange(
-				PHONES_API_URL + userTest.getUserId(), HttpMethod.GET, null,
+		ResponseEntity<Set<PhoneNumberDTO>> response = restTemplate.exchange(PHONES_API_URL + TEST_ID, HttpMethod.GET, null,
 				new ParameterizedTypeReference<Set<PhoneNumberDTO>>() {
-				});
+		});
 
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 		assertEquals(phoneTest, response.getBody().iterator().next());
@@ -263,7 +248,7 @@ class SpringRestApiTests {
 	 * Checks the response status and returned user data for the only user previously stored.
 	 */
 	@Test
-	public void getUsersTest() {
+	public void getDatabaseUsersTest() {
 
 		ResponseEntity<List<UserDTO>> response = restTemplate.exchange(USERS_API_URL, HttpMethod.GET, null,
 				new ParameterizedTypeReference<List<UserDTO>>() {
@@ -281,14 +266,9 @@ class SpringRestApiTests {
 	/**
 	 * Sends a GET request for all database adresses.
 	 * Checks the response status and returned user data for the only address previously stored.
-	 * @throws NotFoundException
-	 * @throws IllegalStateException
-	 * @throws IllegalAddressStateException
 	 */
 	@Test
-	public void getAdressesTest() throws IllegalAddressStateException, IllegalStateException, NotFoundException {
-
-		addressService.createAddress(userTest.getUserId(), addressTest);
+	public void getDatabaseAdressesTest() {
 
 		ResponseEntity<List<AddressDTO>> response = restTemplate.exchange(ADRESSES_API_URL, HttpMethod.GET, null,
 				new ParameterizedTypeReference<List<AddressDTO>>() {
@@ -308,14 +288,9 @@ class SpringRestApiTests {
 	/**
 	 * Sends a GET request for all database phone numbers.
 	 * Checks the response status and returned user data for the only phone number previously stored.
-	 * @throws NotFoundException
-	 * @throws IllegalPhoneStateException
-	 * @throws IllegalStateException
 	 */
 	@Test
-	public void getPhonesTest() throws IllegalStateException, IllegalPhoneStateException, NotFoundException {
-
-		phoneService.createPhoneNumber(userTest.getUserId(), phoneTest);
+	public void getDatabasePhonesTest() {
 
 		ResponseEntity<Set<PhoneNumberDTO>> response = restTemplate.exchange(PHONES_API_URL, HttpMethod.GET, null,
 				new ParameterizedTypeReference<Set<PhoneNumberDTO>>() {
@@ -345,8 +320,7 @@ class SpringRestApiTests {
 
 		HttpEntity<UserDTO> requestUpdate = new HttpEntity<>(updatedUser);
 
-		ResponseEntity<UserDTO> response = restTemplate.exchange(
-				USERS_API_URL + userTest.getUserId(), HttpMethod.PUT, requestUpdate, UserDTO.class);
+		ResponseEntity<UserDTO> response = restTemplate.exchange(USERS_API_URL + TEST_ID, HttpMethod.PUT, requestUpdate, UserDTO.class);
 
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 		assertNotNull(response.getBody());
@@ -361,14 +335,9 @@ class SpringRestApiTests {
 	 * Creates a new address with updated data.
 	 * Creates an HTTP entity with the updated address.
 	 * Sends a PUT request to the adrress URL with the user ID and the updated HTTP entity.
-	 * @throws NotFoundException
-	 * @throws IllegalStateException
-	 * @throws IllegalAddressStateException
 	 */
 	@Test
-	public void updateAddressTest() throws IllegalAddressStateException, IllegalStateException, NotFoundException {
-
-		addressService.createAddress(userTest.getUserId(), addressTest);
+	public void updateUserAddressTest() {
 
 		AddressDTO updatedAddress = AddressDTO.builder()
 				.publicPlace("Rua")
@@ -382,7 +351,7 @@ class SpringRestApiTests {
 		HttpEntity<AddressDTO> requestUpdate = new HttpEntity<>(updatedAddress);
 
 		ResponseEntity<AddressDTO> response = restTemplate.exchange(
-				ADRESSES_API_URL + userTest.getUserId(), HttpMethod.PUT, requestUpdate, AddressDTO.class);
+				ADRESSES_API_URL + TEST_ID, HttpMethod.PUT, requestUpdate, AddressDTO.class);
 
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 		assertNotNull(response.getBody());
@@ -399,14 +368,9 @@ class SpringRestApiTests {
 	 * Creates a new phone number with updated data.
 	 * Creates an HTTP entity with the updated phone number.
 	 * Sends a PUT request to the phone number URL with the user ID and the updated HTTP entity.
-	 * @throws NotFoundException
-	 * @throws IllegalPhoneStateException
-	 * @throws IllegalStateException
 	 */
 	@Test
-	public void updatePhoneTest() throws IllegalStateException, IllegalPhoneStateException, NotFoundException {
-
-		phoneService.createPhoneNumber(userTest.getUserId(), phoneTest);
+	public void updateUserPhoneTest() {
 
 		PhoneNumberDTO updatedPhone = PhoneNumberDTO.builder()
 				.type("Moblie")
@@ -416,7 +380,7 @@ class SpringRestApiTests {
 		HttpEntity<PhoneNumberDTO> requestUpdate = new HttpEntity<>(updatedPhone);
 
 		ResponseEntity<PhoneNumberDTO> response = restTemplate.exchange(
-				PHONES_API_URL + userTest.getUserId(), HttpMethod.PUT, requestUpdate, PhoneNumberDTO.class);
+				PHONES_API_URL + TEST_ID, HttpMethod.PUT, requestUpdate, PhoneNumberDTO.class);
 
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 		assertNotNull(response.getBody());
@@ -425,49 +389,37 @@ class SpringRestApiTests {
 	}
 
 	/**
-	 * Sends a DELETE request for the users API URL with the user ID and checks response status.
-	 * The Void class is a non-instantiable placeholder class to contain a reference to the Class object
-	 * representing the Java keyword void.
-	 */
-	@Test
-	public void deleteUserTest() {
-
-		ResponseEntity<Void> response = restTemplate.exchange(
-				USERS_API_URL + userTest.getUserId(), HttpMethod.DELETE, null, Void.class);
-
-		assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
-	}
-
-	/**
 	 * Sends a DELETE request for the adresses API URL with the user ID and checks response status.
-	 * @throws NotFoundException
-	 * @throws IllegalStateException
-	 * @throws IllegalAddressStateException
 	 */
 	@Test
-	public void deleteAddressTest() throws IllegalAddressStateException, IllegalStateException, NotFoundException {
+	public void deleteUserAddressTest() {
 
-		addressService.createAddress(userTest.getUserId(), addressTest);
-
-		ResponseEntity<Void> response = restTemplate.exchange(
-				ADRESSES_API_URL + userTest.getUserId(), HttpMethod.DELETE, null, Void.class);
+		ResponseEntity<Void> response = restTemplate.exchange(ADRESSES_API_URL + TEST_ID, HttpMethod.DELETE, null, Void.class);
 
 		assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
 	}
 
 	/**
 	 * Sends a DELETE request for the phones API URL with the user ID and checks response status.
-	 * @throws NotFoundException
-	 * @throws IllegalPhoneStateException
-	 * @throws IllegalStateException
 	 */
 	@Test
-	public void deletePhoneTest() throws IllegalStateException, IllegalPhoneStateException, NotFoundException {
+	public void deleteUserPhoneTest() {
 
-		phoneService.createPhoneNumber(userTest.getUserId(), phoneTest);
+		ResponseEntity<Void> response = restTemplate.exchange(PHONES_API_URL + TEST_ID, HttpMethod.DELETE, null, Void.class);
 
-		ResponseEntity<Void> response = restTemplate.exchange(
-				PHONES_API_URL + userTest.getUserId(), HttpMethod.DELETE, null, Void.class);
+		assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+	}
+
+	/**
+	 * Sends a DELETE request for the users API URL with the user ID and checks response status.
+	 * <p>The <code>Void</code> class is a non-instantiable placeholder class to contain a reference to the
+	 * <code>Class<code> object representing the Java keyword <code>void</code>.
+	 */
+	@Test
+	@Order(15)
+	public void deleteUserTest() {
+
+		ResponseEntity<Void> response = restTemplate.exchange(USERS_API_URL + TEST_ID, HttpMethod.DELETE, null, Void.class);
 
 		assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
 	}
@@ -475,9 +427,10 @@ class SpringRestApiTests {
 	// helper method for user assertions
 	private void assertUser(ResponseEntity<UserDTO> userResponse) {
 		assertEquals(userTest.getName(), userResponse.getBody().getName());
-		assertEquals(userTest.getEmail(), userResponse.getBody().getEmail());
-		assertEquals(userTest.getCpf(), userResponse.getBody().getCpf());
+		assertEquals(userTest.getSurName(), userResponse.getBody().getSurName());
 		assertEquals(userTest.getBirthDate(), userResponse.getBody().getBirthDate());
+		assertEquals(userTest.getCpf(), userResponse.getBody().getCpf());
+		assertEquals(userTest.getEmail(), userResponse.getBody().getEmail());
 	}
 
 	// helper method for address assertions

@@ -1,7 +1,8 @@
-package com.venturasistemoj.restapi.domain.phone;
+package com.venturasistemoj.restapi.exceptions;
 
 /**
  * Exception that handles the consistency of a phone's data.
+ *
  * @author Wilson Ventura
  */
 public class IllegalPhoneStateException extends RuntimeException {

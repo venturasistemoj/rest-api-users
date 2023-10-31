@@ -1,48 +1,51 @@
 package com.venturasistemoj.restapi.domain.user;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.venturasistemoj.restapi.exceptions.IllegalUserStateException;
+
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 
 /**
- * [EN] Class implementing the UserService interface for managing business logic related to users.
- *
- * [PT] Classe de implementação da interface UserService para gerenciar a lógica de negócios relacionada aos usuários.
+ * <code>UserService</code> interface implementation class to manage business logic related to users.
  *
  * @author Wilson Ventura
- * @since 2023
  */
 
 @Service
 public class UserServiceImpl implements UserService {
 
+	private final String CPF_INCOMPATIBILITY = "CPF incompatibility: same user with different CPF ou different user with same cpf!";
+	private final String INCOMPLETE_USER_DATA = "Incomplete user data!";
+
 	@Autowired private UserRepository userRepository;
 	@Autowired private UserMapper userMapper;
 
 	/**
-	 * Cria um usuário.
-	 * Converte UserDTO em User com UserMapper, salva User na base de dados.
-	 * Converte o User salvo em UserDTO e retorna esse DTO.
-	 * RN1: Caso os dados do usuário estejam corrompidos ou possua cpf duplicado, lança IllegalUserStateException.
-	 * RN2: Caso o mesmo usuário esteja sendo cadastrado com cpf diferente, lança IllegalArgumentException.
+	 * <bold>Creates a new user./<bold>
+	 *
+	 * <p>Converts <code>UserDTO</code> to User with <code>UserMapper/<code> and save this <code>User</code> in the database.
+	 * Converts the saved <code>User</code> to <code>UserDTO</code> and returns this DTO.</p>
+	 * <p>BR1: If the user data is corrupted, throws <code>IllegalUserStateException</code>.</p>
+	 * <p>BR2: If the same user is being registered with a different CPF or a different user is being registered with the
+	 * same CPF, throws <code>IllegalArgumentException</code>.</p>
+	 * <p>Returns the created user.</p>
 	 */
 	@Override
-	public UserDTO createUser(@Valid UserDTO userDTO) throws IllegalArgumentException {
+	public UserDTO createUser(@Valid UserDTO userDTO) throws IllegalArgumentException, IllegalUserStateException {
 
-		List<User> databaseUsers = userRepository.findAll();
-		databaseUsers.forEach(user -> {
-			if( ! checkUserCpf(user, userDTO))
-				throw new IllegalArgumentException(); // RN2
-		});
+		if( ! checkUserState(userDTO))
+			throw new IllegalUserStateException(INCOMPLETE_USER_DATA); // BR1
 
-		if(userRepository.findByCpf(userDTO.getCpf()) != null || ! checkUserState(userDTO))
-			throw new IllegalUserStateException("Dados do usuário incompletos ou cpf duplicado!"); // RN1
+		if( userRepository.findByCpf(userDTO.getCpf()) != null || ! checkCpf(userDTO))
+			throw new IllegalArgumentException(CPF_INCOMPATIBILITY); // BR2
 
 		User user = userMapper.userDTOToUser(userDTO);
 		User savedUser = userRepository.save(user);
@@ -51,26 +54,29 @@ public class UserServiceImpl implements UserService {
 	}
 
 	/**
-	 * Atualiza os dados de um usuário
-	 * Verifica se o usuário existe na base de dados com o ID fornecido, atualiza as informações do usuário
-	 * com os dados do UserDTO recebido, salva as alterações na base de dados, converte o User atualizado em UserDTO
-	 * com UserMapper e retorna esse DTO.
-	 * Caso o usuário não exista, lança NotFoundException.
-	 * Caso userDTO esteja corrompido, lança IllegalUserStateException.
-	 * RN: Caso o mesmo usuário esteja sendo atualizado com outro cpf, lança IllegalArgumentException.
+	 * <bold>Updates user data.</bold>
+	 *
+	 * <p>Checks if the user exists in the database with the given <code>userId</code>, updates the user information with
+	 * the received <code>UserDTO</code> data, saves the changes in the database, converts the updated user to DTO with
+	 * <code>UserMapper</code> and returns this DTO.</p>
+	 * <p>If the user does not exist, throws <code>NotFoundException</code>.</p>
+	 * <p>BR1: If the user data is corrupted, throws <code>IllegalUserStateException</code>.</p>
+	 * <p>BR2: If the same user is being registered with a different CPF or a different user is being registered with the
+	 * same CPF, throws <code>IllegalArgumentException</code>./<p>
+	 * <p>Returns the updated user.</p>
 	 */
 	@Override
-	@Transactional(rollbackFor = IllegalArgumentException.class)
+	@Transactional(rollbackFor = {IllegalArgumentException.class, IllegalUserStateException.class })
 	public UserDTO updateUser(@NotNull Long userId, @Valid UserDTO userDTO)
 			throws NotFoundException, IllegalArgumentException, IllegalUserStateException {
 
 		User existingUser = userRepository.findById(userId).orElseThrow(NotFoundException::new);
 
 		if( ! checkUserState(userDTO))
-			throw new IllegalUserStateException("Dados do usuário incompletos!");
+			throw new IllegalUserStateException(INCOMPLETE_USER_DATA); // BR1
 
-		if( ! checkUserCpf(existingUser, userDTO))
-			throw new IllegalArgumentException();
+		if( ! checkCpf(userDTO))
+			throw new IllegalUserStateException(CPF_INCOMPATIBILITY); // BR2
 
 		existingUser.setName(userDTO.getName());
 		existingUser.setSurName(userDTO.getSurName());
@@ -83,14 +89,19 @@ public class UserServiceImpl implements UserService {
 	}
 
 	/**
-	 * Busca o usuário na base de dados pelo ID fornecido, converte User em UserDTO com UserMapper e retorna esse DTO.
+	 * <bold>Gets an especific user.<bold>
+	 *
+	 * <p>Searches for the user in the database with the given <code>id</code>, converts <code>User</code> to
+	 * <code>UserDTO</code> with <code>UserMapper</code> and returns this DTO.</p>
 	 */
 	@Override
 	@Transactional(readOnly = true)
 	public UserDTO getUserById(@NotNull Long id) throws NotFoundException {
 
-		/* Optional map converte Optional<User> em Optional<UserDTO> usando a referência de método de userMapper.
-		 * Optional orElseThrow lança NotFoundException caso o usuário não seja encontrado.
+		/**
+		 * <p><code>Optional.map</code> converts <code>Optional<User></code> to <code>Optional<UserDTO></code> using the
+		 * <code>userMapper</code> method reference.</p>
+		 * <p><code>Optional.orElseThrow</code> throws NotFoundException if the user is not found.</p>
 		 */
 		return userRepository.findById(id)
 				.map(userMapper::userToUserDTO)
@@ -98,9 +109,11 @@ public class UserServiceImpl implements UserService {
 	}
 
 	/**
-	 * Obtém todos os usuários da base de dados, converte a lista de User em uma lista de UserDTO com UserMapper e
-	 * retorna essa lista.
-	 * @throws NotFoundException
+	 * <bold>Gets all database users.</bold>
+	 *
+	 * <p>Converts the list of <code>User</code> into a list of <code>UserDTO</code>
+	 * with <code>UserMapper</code> and returns that list./<p>
+	 * <p>If there are no users in the database, throws <code>NotFoundException</code>.</p>
 	 */
 	@Override
 	@Transactional(readOnly = true)
@@ -113,8 +126,12 @@ public class UserServiceImpl implements UserService {
 	}
 
 	/**
-	 * Verifica se o usuário existe com o ID fornecido e remove o usuário da base de dados.
-	 * Caso o usuário não exista, lança NotFoundException.
+	 * <bold>Removes an especific user.<bold>
+	 *
+	 * <p>Checks if the user exists with the given <code>userId</code> and removes the user from the database. If the
+	 * user has an associated address and/or telephone number, these will be removed in cascade.</p>
+	 * <p>If the user does not exist, it throws <code>NotFoundException</code>.</p>
+	 * <p>Returns HTTP status 204 No Content.</p>
 	 */
 	@Override
 	@Transactional
@@ -124,8 +141,9 @@ public class UserServiceImpl implements UserService {
 		userRepository.delete(existingUser);
 	}
 
-	// verifica a consistência dos dados do usuário
+	// checks user data consistency
 	private boolean checkUserState(UserDTO userDTO) {
+
 		if( userDTO.getName() == null
 				|| userDTO.getSurName() == null
 				|| userDTO.getBirthDate() == null
@@ -136,17 +154,29 @@ public class UserServiceImpl implements UserService {
 		return true;
 	}
 
-	// verifica duplicidade de usuário com cpf diferente
-	private boolean checkUserCpf(User existingUser, UserDTO userDTO) {
+	// checks same user with different CPF or different user with same CPF
+	private boolean checkCpf(UserDTO userDTO) {
 
-		if( userDTO.getName().equals(existingUser.getName())
-				&& userDTO.getSurName().equals(existingUser.getSurName())
-				&& userDTO.getBirthDate().equals(existingUser.getBirthDate())
-				&& userDTO.getEmail().equals(existingUser.getEmail())
-				&& ! userDTO.getCpf().equals(existingUser.getCpf()) )
-			return false;
+		AtomicBoolean check = new AtomicBoolean(true);
 
-		return true;
+		userRepository.findAll().forEach(user -> {
+
+			if (user.getName().equals(userDTO.getName())
+					&& user.getSurName().equals(userDTO.getSurName())
+					&& user.getBirthDate().equals(userDTO.getBirthDate())
+					&& user.getEmail().equals(userDTO.getEmail())
+					&& !user.getCpf().equals(userDTO.getCpf()))
+				check.set(false);
+			else if (!user.getName().equals(userDTO.getName())
+					&& !user.getSurName().equals(userDTO.getSurName())
+					&& !user.getBirthDate().equals(userDTO.getBirthDate())
+					&& !user.getEmail().equals(userDTO.getEmail())
+					&& user.getCpf().equals(userDTO.getCpf()))
+				check.set(false);
+			else
+				check.set(true);
+		}); // forEach
+
+		return check.get();
 	}
-
 }

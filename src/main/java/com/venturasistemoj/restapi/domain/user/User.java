@@ -25,13 +25,18 @@ import lombok.Data;
  * Entity class for an User.
  *
  * @author Wilson Ventura
- * @since 2023
  */
 
 @Entity
 @Table(name = "users")
-@Data
+@Data // Equivalent to @Getter, @Setter, @RequiredArgsConstructor and @ToString @EqualsAndHashCode (overridden here).
 public class User {
+
+	/**
+	 * <p>Static fields of an <code>@Entity</code> are considered independent of the persistence context and are not
+	 * affected by JPA annotations. Therefore, it is not necessary to mark these fields with <code>@Transient</code>,
+	 * which is only applied to instance fields and does not affect static fields.</p>
+	 */
 
 	// No check digit
 	private static final String CPF_REGEXP = "^[\\d]{3}\\.?[\\d]{3}\\.?[\\d]{3}\\-?[\\d]{2}$";
@@ -50,9 +55,9 @@ public class User {
 	@NotNull private String surName;
 
 	/**
-	 * The <code>JacksonConfig</code> class configures custom serializers and deserializers at application-level
+	 * <p>The <code>JacksonConfig</code> class configures custom serializers and deserializers at application-level
 	 * for the types <code>LocalDate, LocalTime and LocalDateTime</code> eliminating the need for <code>@JsonFormat</code>
-	 * annotation on each entity field of the application that needs it.
+	 * annotation on each entity field of the application that needs it.</p>
 	 */
 
 	//@JsonFormat(pattern = "dd/MM/yyyy")
@@ -70,33 +75,35 @@ public class User {
 
 
 	/**
-	 * <code>@OneToOne</code> indicates a one-to-one relationship between the <code>User</code> and
+	 * <p><code>@OneToOne</code> indicates a one-to-one relationship between the <code>User</code> and
 	 * <code>Address</code>. <code>mappedBy</code> indicates that the <code>address</code> property is mapped by
-	 * <code>user</code> (owner of the relationship) in the <code>Address</code> class, this means that the addresses
+	 * <code>user</code> (owner of the relationship) in the <code>Address</code> class, this means that the adresses
 	 * table has a column <code>user_id</code> that references the primary key of the users table.
 	 * <code>cascade</code> defines that persistence operations performed on the <code>User</code> entity will be
-	 * propagated to the <code>Address/<code> entity.
+	 * propagated to the <code>Address/<code> entity.</p>
 	 */
 	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
 	@JsonManagedReference
 	private Address address;
 
 	/**
-	 * <code>@OneToMany</code> indicates a one-to-many relationship between the <code>User</code> entity and the
+	 * <p><code>@OneToMany</code> indicates a one-to-many relationship between the <code>User</code> and
 	 * <code>PhoneNumber</code>. <code>mappedBy/<code> specifies that the <code>phones</code> property is mapped by
 	 * <code>user</code> (owner of the relationship) in the <code>PhoneNumber</code> class, this means that the phones
 	 * table has a column <code>user_id</code> that references the primary key of the users table.
+	 * <code>cascade</code> defines that persistence operations performed on the <code>User</code> entity will be
+	 * propagated to the <code>PhoneNumber/<code> entity.</p>
 	 */
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	@JsonManagedReference
 	private Set<PhoneNumber> phones;
 
 	/**
-	 * The <code>@JsonManagedReference</code> and <code>@JsonBackReference</code> annotations
+	 * <p>The <code>@JsonManagedReference</code> and <code>@JsonBackReference</code> annotations
 	 * (in <code>Address.user</code> and <code>PhoneNumber.user</code>) are from the Jackson library, used for
 	 * serialization and deserialization of Java objects to JSON. They are used to treat the bidirectional relationship
 	 * between <code>User</code>, <code>PhoneNumber</code> and <code>Address</code> in order to avoid infinite looping
-	 * in JSON serialization.
+	 * in JSON serialization.</p>
 	 */
 
 	@Override

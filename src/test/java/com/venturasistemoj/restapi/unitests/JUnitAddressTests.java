@@ -19,7 +19,7 @@ import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import com.venturasistemoj.restapi.domain.address.AddressController;
+import com.venturasistemoj.restapi.controllers.AddressController;
 import com.venturasistemoj.restapi.domain.address.AddressDTO;
 import com.venturasistemoj.restapi.domain.address.AddressService;
 import com.venturasistemoj.restapi.domain.user.UserDTO;
@@ -34,16 +34,16 @@ public class JUnitAddressTests {
 
 	private UserDTO userDTO;
 	private AddressDTO addressDTO;
-	private final Long userId = 1L;
+	private final Long ID = 1L;
 
 	@BeforeEach
 	void setup() {
 
-		// inicializa os campos anotados com @Mock e os injeta com @InjectMocks no controlador
+		// initializes fields annotated with @Mock and injects them with @InjectMocks into the controller
 		MockitoAnnotations.openMocks(this);
 
 		userDTO = UserDTO.builder()
-				.userId(userId)
+				.userId(ID)
 				.name("Luiz Inacio")
 				.surName("da Silva")
 				.birthDate(LocalDate.of(1972, Month.FEBRUARY, 22))
@@ -52,26 +52,23 @@ public class JUnitAddressTests {
 				.build();
 
 		addressDTO = AddressDTO.builder()
-				.addressId(1L)
+				.addressId(ID)
 				.publicPlace("Avenida")
 				.streetAddress("Glasshouse, 69")
 				.complement("1001")
 				.city("Rio 40º")
 				.state("RJ")
 				.zipCode("69.069-069")
+				.userDTO(userDTO) // assigns user to address
 				.build();
-
-		userDTO.setAddressDTO(addressDTO); // atribui endereço a usuário
-		addressDTO.setUserDTO(userDTO); // atribui usuário a endereço
-
 	}
 
 	@Test
 	void testCreateAddress() throws IllegalArgumentException, NotFoundException {
 
-		when(addressService.createAddress(userId, addressDTO)).thenReturn(addressDTO);
+		when(addressService.createAddress(ID, addressDTO)).thenReturn(addressDTO);
 
-		ResponseEntity<?> response = addressController.createAddress(userId, addressDTO);
+		ResponseEntity<?> response = addressController.createAddress(ID, addressDTO);
 
 		assertEquals(HttpStatus.CREATED, response.getStatusCode());
 		assertEquals(addressDTO, response.getBody());
@@ -81,35 +78,25 @@ public class JUnitAddressTests {
 	@Test
 	void testUpdateAddress() throws IllegalArgumentException, NotFoundException {
 
-		UserDTO newUser = UserDTO.builder()
-				.userId(userId)
-				.name("Dilma")
-				.surName("Rousseff")
-				.birthDate(LocalDate.of(1956, Month.OCTOBER, 26))
-				.cpf("789.456.123-10")
-				.email("dilmae@prov.com")
-				.build();
-
 		AddressDTO newAddress = AddressDTO.builder()
-				.addressId(1L)
+				.addressId(ID)
 				.publicPlace("Avenida")
 				.streetAddress("Planalto, 69")
 				.complement("1010")
 				.city("Rio")
 				.state("RJ")
 				.zipCode("69.069-069")
-				.userDTO(userDTO)
 				.build();
 
-		newAddress.setUserDTO(newUser);
+		when(addressService.updateAddress(ID, newAddress)).thenReturn(newAddress);
+		when(addressService.getAddressByUserId(ID)).thenReturn(newAddress);
 
-		when(addressService.updateAddress(userId, newAddress)).thenReturn(newAddress);
-		when(addressService.getAddressByUserId(userId)).thenReturn(newAddress);
-
-		ResponseEntity<?> response = addressController.updateAddress(userId, newAddress);
+		ResponseEntity<?> response = addressController.updateAddress(ID, newAddress);
 
 		assertEquals(HttpStatus.OK, response.getStatusCode());
+		assertEquals(newAddress.getPublicPlace(), ((AddressDTO) response.getBody()).getPublicPlace());
 		assertEquals(newAddress.getStreetAddress(), ((AddressDTO) response.getBody()).getStreetAddress());
+		assertEquals(newAddress.getCity(), ((AddressDTO) response.getBody()).getCity());
 		assertEquals(newAddress.getState(), ((AddressDTO) response.getBody()).getState());
 		assertEquals(newAddress.getZipCode(), ((AddressDTO) response.getBody()).getZipCode());
 		assertEquals(newAddress.getUserDTO(), ((AddressDTO) response.getBody()).getUserDTO());
@@ -117,9 +104,9 @@ public class JUnitAddressTests {
 
 	void testGetAddressByUserId() throws NotFoundException {
 
-		when(addressService.getAddressByUserId(userId)).thenReturn(addressDTO);
+		when(addressService.getAddressByUserId(ID)).thenReturn(addressDTO);
 
-		ResponseEntity<?> response = addressController.getAddressByUserId(userId);
+		ResponseEntity<?> response = addressController.getAddressByUserId(ID);
 
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 		assertEquals(addressDTO, response.getBody());
@@ -128,27 +115,27 @@ public class JUnitAddressTests {
 	@Test
 	void testGetAdresses() throws NotFoundException {
 
-		List<AddressDTO> adresses = new ArrayList<>();
-		adresses.add(addressDTO);
+		List<AddressDTO> allAdresses = new ArrayList<>();
+		allAdresses.add(addressDTO);
 
-		when(addressService.getAdresses()).thenReturn(adresses);
+		when(addressService.getAdresses()).thenReturn(allAdresses);
 
 		ResponseEntity<?> response = addressController.getAdresses();
 
 		assertEquals(HttpStatus.OK, response.getStatusCode());
-		assertEquals(adresses, response.getBody());
+		assertEquals(allAdresses, response.getBody());
 
 	}
 
 	@Test
 	void testDeleteAddress() throws NotFoundException {
 
-		when(addressService.getAddressByUserId(userId)).thenReturn(addressDTO);
+		when(addressService.getAddressByUserId(ID)).thenReturn(addressDTO);
 
-		ResponseEntity<?> response = addressController.deleteAddress(userId);
+		ResponseEntity<?> response = addressController.deleteAddress(ID);
 
 		assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
-		verify(addressService, times(1)).deleteAddress(userId);
+		verify(addressService, times(1)).deleteAddress(ID);
 	}
 
 }

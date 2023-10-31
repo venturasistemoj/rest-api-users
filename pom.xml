@@ -22,6 +22,11 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/x
 	
 	<dependencies>
 		
+		<!-- There is no need to specify the version number of an artifact – all we need to specify is the 
+		spring-boot-starter-parent artifact version and Spring Boot will figure out which version to use for 
+		each artifact. To later update Boot dependencies, just update the Boot version in one place and it 
+		will take care of the rest.-->
+		
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>

@@ -1,7 +1,8 @@
-package com.venturasistemoj.restapi.domain.address;
+package com.venturasistemoj.restapi.exceptions;
 
 /**
- * Exception that handles the consistency of a address's data.
+ * Exception that handles data consistency of an address.
+ *
  * @author Wilson Ventura
  */
 public class IllegalAddressStateException extends RuntimeException {

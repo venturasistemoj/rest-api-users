@@ -17,10 +17,9 @@ import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 
 /**
- * Entity class for a Phone Number
+ * Entity class for a Phone Number.
  *
  * @author Wilson Ventura
- * @since 2023
  */
 
 @Entity
@@ -28,22 +27,25 @@ import lombok.Data;
 @Data
 public class PhoneNumber {
 
+	/**
+	 * Brazilian phone number.
+	 */
 	private static final String PHONE_REGEXP = "^\\(?[1-9]{2}\\)? ?(?:[2-8]|9[1-9])[0-9]{3}\\-?[0-9]{4}$";
-	private static final String PHONE_MESSAGE = "Telefone inválido!";
+	private static final String PHONE_MESSAGE = "Invalid phone number!";
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long phoneId;
 
-	private String type;
+	@NotNull private String type;
 
 	@Pattern(regexp = PHONE_REGEXP, message = PHONE_MESSAGE)
 	@NotNull private String number;
 
 	/**
-	 * <code>@ManyToOne</code> indicates a many-to-one relationship with the <code>User</code> entity.
-	 * <code>@JoinColumn</code> specifies the column in the <code>phones</code> table that stores the foreign key
-	 * for the <code>users</code> table.
+	 * <p><code>@ManyToOne</code> indicates a many-to-one relationship with the <code>User</code> entity.</p>
+	 * <p><code>@JoinColumn</code> specifies the column in the <code>phones</code> table that stores the foreign key
+	 * for the <code>users</code> table.</p>
 	 */
 	@ManyToOne
 	@JoinColumn(name = "user_id") // foreign key

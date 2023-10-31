@@ -11,17 +11,16 @@ import org.springframework.transaction.annotation.Transactional;
 import com.venturasistemoj.restapi.domain.user.User;
 import com.venturasistemoj.restapi.domain.user.UserMapper;
 import com.venturasistemoj.restapi.domain.user.UserRepository;
+import com.venturasistemoj.restapi.exceptions.IllegalAddressStateException;
+import com.venturasistemoj.restapi.exceptions.IllegalOperationException;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 
 /**
- * [EN] Class implementing the AddressService interface for managing business logic related to adresses.
- *
- * [PT] Classe de implementação da interface AddressService para gerenciar a lógica de negócios relacionada a endereços.
+ * <code>AddressService</code> interface implementation class to manage business logic related to adresses.
  *
  * @author Wilson Ventura
- * @since 2023
  */
 
 @Service
@@ -33,54 +32,58 @@ public class AddressServiceImpl implements AddressService {
 	@Autowired private UserRepository userRepository;
 	@Autowired private UserMapper userMapper;
 
-	private static final String INCONPLETE_ADDRESS_DATA = "Dados do endereço incompletos!";
+	private static final String INCONPLETE_ADDRESS_DATA = "Incomplete address data!";
+	private static final String EXISTING_ADDRESS = "User already has a registered address!";
 
 	/**
-	 * Cria um novo endereço para um usuário existente.
-	 * Caso o usuário não exista, lança NotFoundException.
-	 * Caso os dados do endereço estejam corrompidos ou exista endereço cadastrado, lança IllegalArgumentException.
-	 * RN3: não é possível criar endereço sem usuário.
-	 * RN4: não é possível criar mais de um endereço para um usuário.
+	 * <bold>Creates a new address for an existing user.</bold>
+	 *
+	 * <p>BR3: it is not possible to create an address without an existing user.
+	 * If the user does not exist, throws <code>NotFoundException</code>.</p>
+	 * <p>BR4: it is not possible to create more than one address for a user.
+	 * Otherwise, throws <code>IllegalOperationException</code>.</p>
+	 * <p>If the address data is incomplete, throws <code>IllegalAddressStateException</code>.</p>
+	 * <p>Returns the created address.</p>
 	 */
 	@Override
 	public AddressDTO createAddress(@NotNull Long userId, @Valid AddressDTO addressDTO)
-			throws NotFoundException, IllegalStateException, IllegalAddressStateException {
+			throws NotFoundException, IllegalOperationException, IllegalAddressStateException {
 
-		User existingUser = checkUser(userId); // RN3
+		User existingUser = getUser(userId); // BR3: throws NotFoundException
 
 		if(existingUser.getAddress() != null)
-			throw new IllegalStateException(); // RN4
+			throw new IllegalOperationException(EXISTING_ADDRESS); // BR4
 
 		if( ! checkAddressState(addressDTO))
 			throw new IllegalAddressStateException(INCONPLETE_ADDRESS_DATA);
 
-		addressDTO.setUserDTO(userMapper.userToUserDTO(existingUser)); // associa usuário a endereço
+		// associates address with user
+		addressDTO.setUserDTO(userMapper.userToUserDTO(existingUser));
+
 		Address savedAddress = addressRepository.save(addressMapper.addressDTOToAddress(addressDTO));
 		return addressMapper.addressToAddressDTO(savedAddress);
 	}
 
 	/**
-	 * Atualiza e sobrescreve o endereço de um usuário existente.
-	 * Caso o usuário não exista, lança NotFoundException.
-	 * Caso os dados do endereço estejam corrompidos, lança IllegalArgumentException.
-	 * Retorna o endereço atualizado.
+	 * <bold>Updates and overwrites an existing user's address.</bold>
+	 *
+	 * <p>If the user or address does not exist, throws <code>NotFoundException</code>.</p>
+	 * <p>If the address data is incomplete, throws <code>IllegalAddressStateException</code>.</p>
+	 * <p>Returns the updated address.</p>
 	 */
 	@Override
-	@Transactional(rollbackFor = IllegalArgumentException.class)
+	@Transactional(rollbackFor = IllegalAddressStateException.class)
 	public AddressDTO updateAddress(@NotNull Long userId, @Valid AddressDTO addressDTO)
-			throws NotFoundException, IllegalArgumentException, IllegalAddressStateException {
+			throws NotFoundException, IllegalAddressStateException {
 
-		User existingUser = checkUser(userId);
+		User existingUser = getUser(userId); // throws NotFoundException "Nonexistent user or address!"
+
 		Address existingAddress = addressRepository.findByUser(existingUser);
-
 		if(existingAddress == null)
 			throw new NotFoundException();
 
 		if( ! checkAddressState(addressDTO))
 			throw new IllegalAddressStateException(INCONPLETE_ADDRESS_DATA);
-
-		if(existingAddress.equals(addressMapper.addressDTOToAddress(addressDTO)))
-			throw new IllegalArgumentException();
 
 		existingAddress.setPublicPlace(addressDTO.getPublicPlace());
 		existingAddress.setStreetAddress(addressDTO.getStreetAddress());
@@ -94,14 +97,15 @@ public class AddressServiceImpl implements AddressService {
 	}
 
 	/**
-	 * Obtém o endereço de um usuário existente.
-	 * Caso o usuário não exista, lança NotFoundException.
+	 * <bold>Gets the address of an existing user.</bold>
+	 *
+	 * <p>If the user or address does not exist, throws <code>NotFoundException</code>.</p>
 	 */
 	@Override
 	@Transactional(readOnly = true)
 	public AddressDTO getAddressByUserId(@NotNull Long userId) throws NotFoundException {
 
-		User existingUser = checkUser(userId);
+		User existingUser = getUser(userId); // throws NotFoundException "Nonexistent user or address!"
 
 		if(existingUser.getAddress() != null)
 			return addressMapper.addressToAddressDTO(addressRepository.findByUser(existingUser));
@@ -110,40 +114,46 @@ public class AddressServiceImpl implements AddressService {
 	}
 
 	/**
-	 * Obtém todos os endereços da base de dados.
-	 * @throws NotFoundException
+	 * <bold>Gets all addresses from the database.</bold>
+	 *
+	 * <p>If there is no registered address, throws <code>NotFoundException</code>.</p>
 	 */
 	@Override
 	@Transactional(readOnly = true)
 	public List<AddressDTO> getAdresses() throws NotFoundException {
 
-		if(addressRepository.findAll().isEmpty())
+		List<Address> allAdresses = addressRepository.findAll();
+
+		if(allAdresses.isEmpty())
 			throw new NotFoundException();
 
-		return addressMapper.adressesToAdressesDTO(addressRepository.findAll());
+		return addressMapper.adressesToAdressesDTO(allAdresses);
 	}
 
 	/**
-	 * Remove o endereço de um usuário existente.
-	 * Caso o usuário não exista, lança NotFoundException.
+	 * <bold>Removes an existing user's address.</bold>
+	 *
+	 * <p>If the user ou address does not exist, throws <code>NotFoundException</code>.</p>
+	 * <p>Returns HTTP status 204 No Content.</p>
 	 */
 	@Override
 	@Transactional
 	public void deleteAddress(@NotNull Long userId) throws NotFoundException {
 
-		User existingUser = checkUser(userId);
+		User existingUser = getUser(userId); // throws NotFoundException "Nonexistent user or address!"
+
 		Address existingAddress = addressRepository.findByUser(existingUser);
 
 		if(existingAddress != null ) {
-			existingUser.setAddress(null); // Desassocia endereço de usuário
-			addressRepository.delete(existingAddress); // Exclui o endereço
+			existingUser.setAddress(null); // disassociates the user's address
+			addressRepository.delete(existingAddress); // delete the user's address
 		} else
 			throw new NotFoundException();
 	}
 
-	// Verifica existência de usuário para associar endereço.
+	// Checks the existence of the user to associate the address.
 	@Transactional(readOnly = true)
-	private User checkUser(Long userId) throws NotFoundException {
+	private User getUser(Long userId) throws NotFoundException {
 
 		Optional<User> optionalUser = userRepository.findById(userId);
 
@@ -153,7 +163,7 @@ public class AddressServiceImpl implements AddressService {
 			throw new NotFoundException();
 	}
 
-	// verifica a consistência dos dados do endereço
+	// Checks address data consistency.
 	private boolean checkAddressState(AddressDTO addressDTO) {
 
 		if( addressDTO.getPublicPlace() == null

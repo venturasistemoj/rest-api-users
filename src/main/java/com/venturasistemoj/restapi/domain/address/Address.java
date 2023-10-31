@@ -18,16 +18,18 @@ import lombok.Data;
  * Entity class for an Address.
  *
  * @author Wilson Ventura
- * @since 2023
  */
 
 @Entity
-@Table(name = "addresses")
+@Table(name = "adresses")
 @Data
 public class Address {
 
+	/**
+	 * The <italic>zip code</italic> is the <bold>brazilian CEP</bold>.
+	 */
 	private static final String ZIP_CODE_REGEXP = "^[\\d]{2}\\.?[\\d]{3}\\-?[\\d]{3}$";
-	private static final String ZIP_CODE_MESSAGE = "CEP inválido!";
+	private static final String ZIP_CODE_MESSAGE = "Invalid brazilian CEP!";
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,9 +45,9 @@ public class Address {
 	@NotNull private String zipCode;
 
 	/**
-	 * <code>@OneToOne</code> indicates the one-to-one relationship with the <code>User</code> class.
-	 * <code>@JoinColumn(name = "user_id")</code> specifies the column in the <code>addresses/<code> table used as the
-	 * foreign key to map the relationship.
+	 * <p><code>@OneToOne</code> indicates the one-to-one relationship with the <code>User</code> class.</p>
+	 * <p><code>@JoinColumn(name = "user_id")</code> specifies the column in the <code>addresses/<code> table used as
+	 * the foreign key to map the relationship.</p>
 	 */
 	@OneToOne
 	@JoinColumn(name = "user_id") // foreign key

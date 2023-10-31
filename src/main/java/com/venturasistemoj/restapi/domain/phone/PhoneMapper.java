@@ -9,12 +9,18 @@ import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 
 /**
- * [EN] Interface used for mapping entities to DTOs and vice versa by MapStruct.
+ * Interface used for mapping entities to DTOs and vice versa by MapStruct.
  *
- * [PT] Interface usada pelo MapStruct para mapear entidades para DTOs e vice-versa.
+ * <p>The <code>@Mapper</code> annotation marks an interface or abstract class as a mapper and activates the generation
+ * of a implementation of that type via MapStruct./<p>
+ * <p>The <code>componentModel</code> parameter defines how the mapper will be managed and injected into other project
+ * components. The component model is Spring and injection into the service is done at the field level with
+ * <code>@Autowired</code>./<p>
+ * <p>The <code>unmappedTargetPolicy</code> parameter defines the default reporting policy to apply if an attribute
+ * of a mapping method's target object is not populated with a source value. <code>ReportingPolicy.IGNORE</code>
+ * avoids generating errors for unmapped properties./<p>
  *
  * @author Wilson Ventura
- * @since 2023
  */
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)

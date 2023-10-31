@@ -1,4 +1,4 @@
-package com.venturasistemoj.restapi.domain.address;
+package com.venturasistemoj.restapi.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
@@ -13,13 +13,19 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.venturasistemoj.restapi.domain.address.AddressDTO;
+import com.venturasistemoj.restapi.domain.address.AddressService;
+import com.venturasistemoj.restapi.exceptions.IllegalAddressStateException;
+import com.venturasistemoj.restapi.exceptions.IllegalOperationException;
+
 /**
- * [EN] Address API interface for coordinating requests and responses.
+ * Adresses API interface for coordinating requests and responses.
  *
- * [PT] Interface da API de endereços para coordenar requisições e respostas.
+ * <p>The Spring <code>@RestController</code> annotation marks the class as a controller where each method returns
+ * a domain object instead of a view. It is a shortcut to include <code>@Controller</code> and
+ * <code>@ResponseBody/<code> Java annotations.</p>
  *
  * @author Wilson Ventura
- * @since 2023
  */
 
 @RestController
@@ -29,21 +35,19 @@ public class AddressController {
 	@Autowired
 	private AddressService addressService;
 
-	private static final String BAD_ADDRESS = "Dados do endereço duplicados!";
-	private static final String NOT_FOUND = "Usuário ou endereço inexistente!";
-	private static final String EXISTING_ADDRESS = "Usuário já possui endereço cadastrado!";
+	private static final String NOT_FOUND = "Nonexistent user or address!";
 
 	@PostMapping("/{userId}")
 	public ResponseEntity<?> createAddress(@PathVariable Long userId, @RequestBody AddressDTO addressDTO) {
 
 		try {
 			AddressDTO savedAddress = addressService.createAddress(userId, addressDTO);
+			// Spring RESTful web service controller populates and returns an object.
+			// The object data will be written directly to the HTTP response as JSON by embedded Jackson JSON.
 			return ResponseEntity.status(HttpStatus.CREATED).body(savedAddress);
 		} catch (NotFoundException e) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(NOT_FOUND);
-		} catch (IllegalStateException e) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(EXISTING_ADDRESS);
-		} catch (IllegalAddressStateException e) {
+		} catch (IllegalOperationException | IllegalAddressStateException e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 		}
 	}
@@ -56,8 +60,6 @@ public class AddressController {
 			return ResponseEntity.ok(updatedAddress);
 		} catch (NotFoundException e) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(NOT_FOUND);
-		} catch (IllegalArgumentException e) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(BAD_ADDRESS);
 		} catch (IllegalAddressStateException e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 		}

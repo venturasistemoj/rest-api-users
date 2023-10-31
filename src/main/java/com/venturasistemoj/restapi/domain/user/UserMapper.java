@@ -12,24 +12,23 @@ import com.venturasistemoj.restapi.domain.address.AddressMapper;
 import com.venturasistemoj.restapi.domain.phone.PhoneMapper;
 
 /**
- * [EN] Interface used for mapping entities to DTOs and vice versa by MapStruct.
+ * Interface used for mapping entities to DTOs and vice versa by MapStruct.
  *
- * [PT] Interface usada pelo MapStruct para mapear entidades para DTOs e vice-versa.
- *
- * O parâmetro <code>componentModel</code> define como o mapeador será gerenciado e injetado em outros componentes
- * do projeto. O modelo do componente é Spring e a injeção no serviço é feita em nível de campo com
- * <code>@Autowired.</code>>
- * O parâmetro <code>unmappedTargetPolicy</code> define a política de relatórios padrão a ser aplicada se um atributo
- * do objeto destino de um método de mapeamento não é preenchido com um valor de origem. <code>ReportingPolicy.IGNORE</code>
- * evita gerar erros para propriedades não mapeadas.
- * O parâmetro <code>uses</code> especifica outros mapeadores usados como dependências no mapeador atual.
- * A anotação <code>@InheritInverseConfiguration</code> herda a configuração de <strong>mapeamento inverso</strong> do
- * método <code>userDTOToUser</code>.
- * <code>@IterableMapping</code> configura o mapeamento entre dois tipos semelhantes iteráveis,
- * por exemplo List<Usuario> e List<UsuarioDTO>.
+ * <p>The <code>@Mapper</code> annotation marks an interface or abstract class as a mapper and activates the generation
+ * of a implementation of that type via MapStruct.</p>
+ * <p>The <code>componentModel</code> parameter defines how the mapper will be managed and injected into other project
+ * components. The component model is Spring and injection into the service is done at the field level with
+ * <code>@Autowired</code>.</p>
+ * <p>The <code>unmappedTargetPolicy</code> parameter defines the default reporting policy to apply if an attribute
+ * of a mapping method's target object is not populated with a source value. <code>ReportingPolicy.IGNORE</code>
+ * avoids generating errors for unmapped properties./<p>
+ * <p>The <code>uses</code> parameter specifies other mappers used as dependencies on the current mapper.</p>
+ * <p>The <code>@InheritInverseConfiguration</code> annotation inherits the <strong>inverse mapping</strong> configuration
+ * from the respective method method.</p>
+ * <p><code>@IterableMapping</code> configures the mapping between two similar iterable types, for example
+ * <code>List<User></code> and <code>List<UserDTO></code>./<p>
  *
  * @author Wilson Ventura
- * @since 2023
  */
 @Mapper(
 		componentModel = "spring",

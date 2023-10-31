@@ -1,7 +1,8 @@
-package com.venturasistemoj.restapi.domain.user;
+package com.venturasistemoj.restapi.exceptions;
 
 /**
  * Exception that handles the consistency of a user's data.
+ *
  * @author Wilson Ventura
  */
 public class IllegalUserStateException extends RuntimeException {

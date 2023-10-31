@@ -20,30 +20,34 @@ import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import com.venturasistemoj.restapi.domain.user.UserController;
+import com.venturasistemoj.restapi.controllers.UserController;
 import com.venturasistemoj.restapi.domain.user.UserDTO;
 import com.venturasistemoj.restapi.domain.user.UserService;
 
 /**
- * [EN] Test class for UserController class with JUnit and Mockito (Without loading application context).
- * This claas uses the Mockito library to create UserRepository mocks and inject them into the UserController using
- * the @InjectMocks annotation. It also uses the @BeforeEach annotation to initialize the mocks before each test using
- * MockitoAnnotations.openMocks(this).
+ * <p>JUnit test class for <code>UserController</code>, focusing on operations related to user management.
+ * Use Mockito to 'mock' <code>UserService</code> and test the behavior of <code>UserController</code>.
+ * Before each test case, the required mock objects are initialized and injected into the controller. Additionally,
+ * it uses the Builder design pattern provided by Lombok to create <code>UserDTO</code> instances for testing.</p>
  *
- * On each test, configures the expected behavior of the mocks, then calls the methods of UserController and
- * checks the results. The when method activates fragmentation methods and is used for the simulation to return a value
- * specific when a specific method is called.
+ * <p>The test methods cover the following scenarios:</p>
+ * <ul>
+ * <li>1. Creates a user by simulating the <code>createUser</code> method of <code>UserService</code> and asserts the
+ * HTTP response.
+ * <li>2. Updates a user by simulating the <code>getUserById</code> and <code>updateUser</code> methods of
+ * <code>UserService</code> and asserts the response.
+ * <li>3. Retrieves a user by simulating <code>getUserById</code> from <code>UserService</code> and validates the returned
+ * response.
+ * <li>4. List users by simulating the <code>getUsers</code> method of <code>UserService</code> and compare the expected
+ * list with the response.
+ * <li>5. Deletes a user by simulating <code>getUserById</code> from <code>UserService</code> and verifies the deletion
+ * via the HTTP response and the <code>deleteUser</code> method call.
+ * </ul>
  *
- * [PT] Classe de teste com JUnit e Mockito (Sem carregar o contexto da aplicação).
- * Esta classe utiliza a biblioteca Mockito para criar mocks de UserService e os injeta no UserController com a
- * anotação @InjectMocks. Também utiliza a anotação @BeforeEach para inicializar os mocks antes de cada teste usando
- * MockitoAnnotations.openMocks(this).
- *
- * Em cada teste, configura o comportamento esperado dos mocks usando a função when e thenReturn do Mockito.
- * Por fim, verifica os resultados do teste usando as funções assert do JUnit, como assertEquals.
+ * See {@link com.venturasistemoj.restapi.unitests.JUnitAddressTests}
+ * See {@link com.venturasistemoj.restapi.unitests.JUnitPhoneTests}
  *
  * @author Wilson Ventura
- * @since 2023
  */
 
 class JUnitUserTests {
@@ -55,16 +59,17 @@ class JUnitUserTests {
 	private UserController userController;
 
 	private UserDTO userDTO;
+	private final Long userId = 1L;
 
 	@BeforeEach
 	void setup() {
 
-		// inicializa os campos anotados com @Mock e os injeta com @InjectMocks no controlador
+		// initializes fields annotated with @Mock and injects them with @InjectMocks into the controller
 		MockitoAnnotations.openMocks(this);
 
-		// Utilização do design patter Builder por meio do Lombok
+		// Use of the design pattern Builder by Lombok
 		userDTO = UserDTO.builder()
-				.userId(1L)
+				.userId(userId)
 				.name("Luiz Inacio")
 				.surName("da Silva")
 				.birthDate(LocalDate.of(1972, Month.FEBRUARY, 22))
@@ -87,8 +92,8 @@ class JUnitUserTests {
 	@Test
 	void testUpdateUser() throws NotFoundException {
 
-		UserDTO newUser = UserDTO.builder()
-				.userId(1L)
+		UserDTO updatedUser = UserDTO.builder()
+				.userId(userId)
 				.name("Dilma")
 				.surName("Rousseff")
 				.birthDate(LocalDate.of(1956, Month.OCTOBER, 26))
@@ -96,24 +101,24 @@ class JUnitUserTests {
 				.email("dilma@prov.com")
 				.build();
 
-		final Long userId = newUser.getUserId();
-		when(userService.updateUser(userId, newUser)).thenReturn(newUser);
-		when(userService.getUserById(userId)).thenReturn(newUser);
+		when(userService.updateUser(userId, updatedUser)).thenReturn(updatedUser);
 
-		ResponseEntity<?> response = userController.updateUser(userId, newUser);
+		ResponseEntity<?> response = userController.updateUser(userId, updatedUser);
 
 		assertEquals(HttpStatus.OK, response.getStatusCode());
-		assertEquals(newUser.getSurName(), ((UserDTO) response.getBody()).getSurName());
-		assertEquals(newUser.getEmail(), ((UserDTO) response.getBody()).getEmail());
-		assertEquals(newUser.getCpf(), ((UserDTO) response.getBody()).getCpf());
+		assertEquals(updatedUser.getName(), ((UserDTO) response.getBody()).getName());
+		assertEquals(updatedUser.getSurName(), ((UserDTO) response.getBody()).getSurName());
+		assertEquals(updatedUser.getBirthDate(), ((UserDTO) response.getBody()).getBirthDate());
+		assertEquals(updatedUser.getCpf(), ((UserDTO) response.getBody()).getCpf());
+		assertEquals(updatedUser.getEmail(), ((UserDTO) response.getBody()).getEmail());
 	}
 
 	@Test
 	void testGetUserById() throws NotFoundException {
 
-		when(userService.getUserById(1L)).thenReturn(userDTO);
+		when(userService.getUserById(userId)).thenReturn(userDTO);
 
-		ResponseEntity<?> response = userController.getUserById(1L);
+		ResponseEntity<?> response = userController.getUserById(userId);
 
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 		assertEquals(userDTO, response.getBody());
@@ -138,11 +143,11 @@ class JUnitUserTests {
 	@Test
 	void testDeleteUser() throws NotFoundException {
 
-		when(userService.getUserById(1L)).thenReturn(userDTO);
+		when(userService.getUserById(userId)).thenReturn(userDTO);
 
-		ResponseEntity<?> response = userController.deleteUser(1L);
+		ResponseEntity<?> response = userController.deleteUser(userId);
 
 		assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
-		verify(userService, times(1)).deleteUser(1L);
+		verify(userService, times(1)).deleteUser(userId);
 	}
 }
