@@ -1,7 +1,7 @@
 # Java RESTful API with Spring Boot
 
 ## Overview
-This demo project highlights the interaction of three independent APIs designed to manage `User`, `Address`, and `PhoneNumber` entities through a Java RESTful API. The project utilizes Spring Boot's Starter Data JPA, Starter Web, Starter Test, Starter Validation, DevTools, and other relevant dependencies such as H2 in-memory Database, Lombok, and MapStruct.
+This demo project highlights the interaction of three independent APIs designed to manage `User`, `Address`, and `PhoneNumber` entities through a Java RESTful API. The project utilizes Spring Boot's Starter Data JPA, Starter Web, Starter Test, Starter Validation, DevTools, and other relevant dependencies such as Springdoc (Swagger UI), H2 in-memory Database, Lombok, and MapStruct.
 
 ## Getting Started
 Follow these steps to run the project locally:
